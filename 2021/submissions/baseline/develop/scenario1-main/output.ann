@@ -1,0 +1,2011 @@
+T1	Action 21 27	ayudan
+T2	Concept 4 12;13 20	glóbulos blancos
+T3	Concept 33 42	organismo
+T4	Action 45 53	combatir
+T5	Action 54 65	infecciones
+R0	subject Arg1:T1 Arg2:T2
+R1	target Arg1:T1 Arg2:T4
+R2	subject Arg1:T4 Arg2:T3
+T6	Reference 67 69	Se
+T7	Action 70 78	contagia
+T8	Concept 91 101;102 110	relaciones sexuales
+T9	Concept 119 126	persona
+T10	Concept 127 136	infectada
+R3	target Arg1:T7 Arg2:T6
+R4	in-context Arg1:T7 Arg2:T8
+R5	in-context Arg1:T8 Arg2:T9
+R6	in-context Arg1:T9 Arg2:T10
+T11	Concept 142 150	lágrimas
+T12	Concept 230 238	lágrimas
+T13	Action 155 165	producidas
+T14	Concept 174 183;184 194	glándulas lagrimales
+T15	Concept 200 208;209 217	conducto lagrimal
+T16	Action 218 223	lleva
+T17	Reference 224 229	estas
+T18	Concept 245 249	ojos
+T19	Predicate 166 169	por
+R7	subject Arg1:T13 Arg2:T11
+R8	subject Arg1:T13 Arg2:T12
+R9	target Arg1:T13 Arg2:T14
+R10	subject Arg1:T16 Arg2:T15
+R11	target Arg1:T16 Arg2:T17
+R12	in-place Arg1:T16 Arg2:T18
+R13	is-a Arg1:T17 Arg2:T11
+R14	is-a Arg1:T17 Arg2:T12
+T20	Concept 347 356	problemas
+T21	Concept 317 323	tiempo
+T22	Predicate 328 331	que
+T23	Concept 255 265	frecuencia
+T24	Concept 271 283	adolescentes
+T25	Action 287 294	reciben
+T26	Concept 295 303	cuidados
+T27	Concept 304 314	prenatales
+T28	Concept 357 368	posteriores
+R15	in-time Arg1:T20 Arg2:T28
+R16	causes Arg1:T25 Arg2:T20
+R17	in-context Arg1:T25 Arg2:T21
+R18	in-time Arg1:T25 Arg2:T23
+R19	subject Arg1:T25 Arg2:T24
+R20	target Arg1:T25 Arg2:T26
+R21	has-property Arg1:T26 Arg2:T27
+T29	Action 441 447	spread
+T30	Predicate 601 605	many
+T31	Concept 451 456	novel
+T32	Concept 370 384	Phage-mediated
+T33	Concept 385 395	horizontal
+T34	Concept 396 400	gene
+T35	Action 401 409	transfer
+T36	Predicate 410 416	events
+T37	Concept 457 466	functions
+T38	Action 481 492	development
+T39	Concept 496 509	pathogenicity
+T40	Concept 513 522	bacterial
+T41	Concept 523 530	strains
+T42	Concept 628 635	strains
+T43	Concept 539 550;551 555	Escherichia coli
+T44	Concept 557 563;564 572	Vibrio cholerae
+T45	Concept 574 587	Streptococcus
+T46	Concept 588 596	pyogenes
+T47	Concept 606 620	Staphylococcus
+T48	Concept 621 627	aureus
+R22	target Arg1:T29 Arg2:T37
+R23	target Arg1:T29 Arg2:T38
+R24	in-context Arg1:T35 Arg2:T32
+R25	in-context Arg1:T35 Arg2:T33
+R26	target Arg1:T35 Arg2:T34
+R27	causes Arg1:T36 Arg2:T29
+R28	domain Arg1:T36 Arg2:T35
+R29	has-property Arg1:T37 Arg2:T31
+R30	is-a Arg1:T38 Arg2:T37
+R31	target Arg1:T38 Arg2:T39
+R32	in-place Arg1:T38 Arg2:T41
+R33	in-place Arg1:T38 Arg2:T42
+R34	in-context Arg1:T41 Arg2:T40
+R35	in-context Arg1:T41 Arg2:T48
+R36	in-context Arg1:T42 Arg2:T40
+R37	in-context Arg1:T42 Arg2:T48
+R38	is-a Arg1:T43 Arg2:T41
+R39	is-a Arg1:T43 Arg2:T42
+R40	is-a Arg1:T44 Arg2:T41
+R41	is-a Arg1:T44 Arg2:T42
+R42	is-a Arg1:T45 Arg2:T41
+R43	is-a Arg1:T45 Arg2:T42
+R44	has-property Arg1:T45 Arg2:T46
+R45	in-context Arg1:T48 Arg2:T47
+T49	Predicate 654 657	que
+T50	Predicate 804 807	que
+T51	Concept 646 653	persona
+T52	Action 666 672;673 684	activo sexualmente
+T53	Action 691 699	contraer
+T54	Concept 703 706	VPH
+T55	Predicate 733 739	riesgo
+T56	Concept 760 767;768 776	parejas sexuales
+T57	Action 785 791	estado
+T58	Concept 796 803	alguien
+T59	Concept 753 759;760 767	muchas parejas
+T60	Concept 818 824;825 832	muchas parejas
+R46	subject Arg1:T52 Arg2:T51
+R47	causes Arg1:T52 Arg2:T53
+R48	subject Arg1:T53 Arg2:T51
+R49	target Arg1:T53 Arg2:T54
+R50	in-context Arg1:T55 Arg2:T53
+R51	causes Arg1:T56 Arg2:T55
+R52	causes Arg1:T57 Arg2:T55
+R53	target Arg1:T57 Arg2:T58
+R54	in-context Arg1:T58 Arg2:T59
+R55	in-context Arg1:T58 Arg2:T60
+T61	Concept 837 843	gluten
+T62	Concept 851 859	proteína
+T63	Concept 875 880	trigo
+T64	Concept 882 888	cebada
+T65	Concept 891 898	centeno
+R56	is-a Arg1:T61 Arg2:T62
+R57	part-of Arg1:T61 Arg2:T63
+R58	part-of Arg1:T61 Arg2:T64
+R59	part-of Arg1:T61 Arg2:T65
+T66	Reference 980 982	se
+T67	Concept 1003 1011	personas
+T68	Concept 1094 1102	personas
+T69	Concept 1054 1059	Wuhan
+T70	Predicate 960 965	hasta
+T71	Concept 1066 1074	contacto
+T72	Predicate 906 913	mayoría
+T73	Concept 921 928	lugares
+T74	Concept 932 939;940 946	Estados Unidos
+T75	Concept 952 959	pruebas
+T76	Concept 969 974	fecha
+T77	Action 990 999	realizado
+T78	Concept 1012 1024	sintomáticas
+T79	Concept 1029 1041	antecedentes
+T80	Concept 1045 1051	viajes
+T81	Concept 1075 1082	cercano
+T82	Reference 1087 1093	dichas
+R60	in-context Arg1:T67 Arg2:T71
+R61	in-context Arg1:T67 Arg2:T78
+R62	in-context Arg1:T67 Arg2:T79
+R63	in-context Arg1:T68 Arg2:T71
+R64	in-context Arg1:T68 Arg2:T78
+R65	in-context Arg1:T68 Arg2:T79
+R66	arg Arg1:T70 Arg2:T76
+R67	in-context Arg1:T71 Arg2:T81
+R68	in-context Arg1:T71 Arg2:T82
+R69	domain Arg1:T72 Arg2:T73
+R70	in-place Arg1:T73 Arg2:T74
+R71	in-context Arg1:T77 Arg2:T67
+R72	in-context Arg1:T77 Arg2:T68
+R73	in-time Arg1:T77 Arg2:T70
+R74	in-place Arg1:T77 Arg2:T72
+R75	target Arg1:T77 Arg2:T75
+R76	in-context Arg1:T79 Arg2:T80
+R77	in-place Arg1:T80 Arg2:T69
+R78	is-a Arg1:T82 Arg2:T67
+R79	is-a Arg1:T82 Arg2:T68
+T83	Concept 1107 1112	virus
+T84	Concept 1138 1149	coronavirus
+T85	Action 1113 1124	corresponde
+T86	Predicate 1130 1134	tipo
+T87	Action 1153 1161	conocido
+T88	Concept 1166 1178	anterioridad
+T89	Concept 1182 1187;1188 1195	seres humanos
+R80	subject Arg1:T85 Arg2:T83
+R81	target Arg1:T85 Arg2:T87
+R82	domain Arg1:T86 Arg2:T84
+R83	target Arg1:T87 Arg2:T86
+R84	in-time Arg1:T87 Arg2:T88
+R85	in-context Arg1:T87 Arg2:T89
+T90	Reference 1240 1244	both
+T91	Concept 1197 1205	SARS-CoV
+T92	Concept 1393 1401	SARS-CoV
+T93	Action 1371 1383	interactions
+T94	Concept 1197 1201	SARS
+T95	Concept 1393 1397	SARS
+T96	Action 1304 1313	infection
+T97	Action 1230 1236	depend
+T98	Concept 1245 1258	extracellular
+T99	Concept 1263 1276	intracellular
+T100	Concept 1277 1279;1280 1281	Ca 2
+T101	Concept 1365 1367;1368 1369	Ca 2
+T102	Concept 1283 1288	pools
+T103	Concept 1293 1303	successful
+T104	Concept 1402 1404	FP
+R86	has-part Arg1:T91 Arg2:T104
+R87	has-part Arg1:T92 Arg2:T104
+R88	causes Arg1:T93 Arg2:T97
+R89	target Arg1:T93 Arg2:T104
+R90	subject Arg1:T96 Arg2:T91
+R91	subject Arg1:T96 Arg2:T92
+R92	subject Arg1:T97 Arg2:T91
+R93	subject Arg1:T97 Arg2:T92
+R94	target Arg1:T97 Arg2:T98
+R95	target Arg1:T97 Arg2:T99
+R96	in-context Arg1:T98 Arg2:T102
+R97	in-context Arg1:T99 Arg2:T102
+T105	Concept 1442 1450	síntomas
+T106	Reference 1474 1476	se
+T107	Predicate 1405 1412	Algunas
+T108	Concept 1413 1421	personas
+T109	Action 1429 1441	experimentar
+T110	Predicate 1454 1458	baja
+T111	Concept 1459 1466	presión
+T112	Action 1477 1482;1483 1485;1486 1489	ponen de pie
+T113	Concept 1500 1511	rápidamente
+R98	in-context Arg1:T105 Arg2:T110
+R99	domain Arg1:T107 Arg2:T108
+R100	target Arg1:T109 Arg2:T105
+R101	subject Arg1:T109 Arg2:T107
+R102	arg Arg1:T110 Arg2:T111
+R103	causes Arg1:T112 Arg2:T109
+R104	in-context Arg1:T112 Arg2:T113
+T114	Concept 1554 1558	data
+T115	Concept 1562 1570	SARS-CoV
+T116	Concept 1653 1662	2019-nCoV
+T117	Concept 1562 1566	SARS
+T118	Concept 1541 1553	experimental
+T119	Concept 1571 1579;1580 1590	protease inhibitors
+T120	Concept 1610 1618	training
+T121	Concept 1619 1622	set
+T122	Action 1626 1634	generate
+T123	Concept 1580 1590	inhibitors
+T124	Concept 1639 1649	inhibitors
+T125	Concept 1571 1579	protease
+T126	Concept 1663 1671	protease
+R105	has-part Arg1:T114 Arg2:T118
+R106	in-context Arg1:T114 Arg2:T119
+R107	is-a Arg1:T114 Arg2:T121
+R108	in-context Arg1:T119 Arg2:T115
+R109	has-property Arg1:T121 Arg2:T120
+R110	subject Arg1:T122 Arg2:T121
+R111	target Arg1:T122 Arg2:T123
+R112	target Arg1:T122 Arg2:T124
+R113	in-context Arg1:T123 Arg2:T125
+R114	in-context Arg1:T123 Arg2:T126
+R115	in-context Arg1:T124 Arg2:T125
+R116	in-context Arg1:T124 Arg2:T126
+R117	in-context Arg1:T125 Arg2:T116
+R118	in-context Arg1:T126 Arg2:T116
+T127	Concept 1672 1678	Killer
+T128	Concept 1731 1734	cap
+T129	Concept 1679 1684	toxin
+T130	Action 1685 1692	encoded
+T131	Concept 1696 1700	pGKL
+T132	Concept 1701 1709	plasmids
+T133	Action 1713 1723	translated
+T134	Concept 1731 1746	cap-independent
+T135	Concept 1747 1754	pathway
+R119	has-property Arg1:T129 Arg2:T127
+R120	target Arg1:T130 Arg2:T129
+R121	subject Arg1:T130 Arg2:T131
+R122	is-a Arg1:T131 Arg2:T132
+R123	target Arg1:T133 Arg2:T130
+R124	subject Arg1:T133 Arg2:T135
+R125	has-property Arg1:T135 Arg2:T134
+T136	Concept 1791 1796	small
+T137	Concept 1779 1787	SARS-CoV
+T138	Concept 1779 1783	SARS
+T139	Concept 1882 1885	RBD
+T140	Concept 1762 1763;1764 1771	S protein
+T141	Predicate 1797 1803	domain
+T142	Predicate 1874 1880	domain
+T143	Concept 1815 1823;1824 1831	residues 306-575
+T144	Concept 1857 1865;1866 1873;1874 1880	receptor binding domain
+T145	Concept 1897 1905;1906 1913	residues 424-494
+T146	Concept 1927 1935;1936 1943;1944 1949	receptor binding motif
+T147	Concept 1951 1954	RBM
+T148	Concept 1956 1964	directly
+T149	Action 1965 1972	mediate
+T150	Action 1977 1988	interaction
+T151	Concept 1994 1998	ACE2
+T152	Concept 1857 1865	receptor
+T153	Concept 1927 1935	receptor
+T154	Action 1866 1873	binding
+T155	Action 1936 1943	binding
+R126	in-place Arg1:T140 Arg2:T137
+R127	in-context Arg1:T141 Arg2:T136
+R128	domain Arg1:T141 Arg2:T140
+R129	has-part Arg1:T141 Arg2:T143
+R130	is-a Arg1:T141 Arg2:T144
+R131	in-context Arg1:T142 Arg2:T136
+R132	domain Arg1:T142 Arg2:T140
+R133	has-part Arg1:T142 Arg2:T143
+R134	is-a Arg1:T142 Arg2:T144
+R135	part-of Arg1:T143 Arg2:T141
+R136	part-of Arg1:T143 Arg2:T142
+*	same-as T144 T139
+R137	part-of Arg1:T145 Arg2:T141
+R138	part-of Arg1:T145 Arg2:T142
+R139	part-of Arg1:T145 Arg2:T144
+*	same-as T145 T146
+*	same-as T145 T147
+R140	subject Arg1:T149 Arg2:T145
+R141	has-property Arg1:T149 Arg2:T148
+R142	target Arg1:T149 Arg2:T150
+R143	target Arg1:T150 Arg2:T151
+T156	Concept 2002 2004;2005 2007;2008 2013;2014 2016;2017 2021	22 de enero de 2020
+T157	Concept 2026 2034	gobierno
+T158	Concept 2035 2040	chino
+T159	Action 2041 2048	declaró
+T160	Concept 2052 2062	cuarentena
+T161	Concept 2070 2078	ciudades
+T162	Concept 2082 2087	Wuhan
+T163	Concept 2089 2098	Huanggang
+T164	Concept 2100 2105	Ezhou
+T165	Action 2121 2128	intento
+T166	Action 2132 2140	contener
+T167	Action 2144 2156	diseminación
+T168	Concept 2161 2166	brote
+T169	Concept 2167 2172	viral
+R144	in-context Arg1:T157 Arg2:T158
+R145	in-time Arg1:T159 Arg2:T156
+R146	subject Arg1:T159 Arg2:T157
+R147	target Arg1:T159 Arg2:T160
+R148	in-place Arg1:T159 Arg2:T162
+R149	in-place Arg1:T159 Arg2:T163
+R150	in-place Arg1:T159 Arg2:T164
+R151	in-context Arg1:T159 Arg2:T165
+R152	is-a Arg1:T162 Arg2:T161
+R153	is-a Arg1:T163 Arg2:T161
+R154	is-a Arg1:T164 Arg2:T161
+R155	target Arg1:T165 Arg2:T166
+R156	target Arg1:T166 Arg2:T167
+R157	target Arg1:T167 Arg2:T168
+R158	in-context Arg1:T168 Arg2:T169
+T170	Concept 2178 2187	problemas
+T171	Concept 2188 2199	ocasionales
+T172	Concept 2207 2214;2215 2221	función sexual
+T173	Concept 2226 2233	comunes
+R159	has-property Arg1:T170 Arg2:T171
+R160	in-context Arg1:T170 Arg2:T172
+R161	has-property Arg1:T170 Arg2:T173
+T174	Action 2412 2421	infection
+T175	Concept 2408 2411	RSV
+T176	Concept 2235 2245	Consistent
+T177	Predicate 2253 2257	role
+T178	Concept 2261 2266	DUSP1
+T179	Concept 2387 2392	DUSP1
+T180	Action 2274 2291	dephosphorylation
+T181	Concept 2295 2298	JNK
+T182	Concept 2341 2344	JNK
+T183	Concept 2303 2306	p38
+T184	Concept 2349 2352	p38
+T185	Action 2329 2337	increase
+T186	Action 2353 2368	phosphorylation
+T187	Action 2376 2383	absence
+T188	Concept 2400 2403	SeV
+R162	subject Arg1:T174 Arg2:T175
+R163	subject Arg1:T174 Arg2:T188
+R164	arg Arg1:T177 Arg2:T178
+R165	arg Arg1:T177 Arg2:T179
+R166	in-context Arg1:T177 Arg2:T180
+R167	subject Arg1:T180 Arg2:T178
+R168	subject Arg1:T180 Arg2:T179
+R169	target Arg1:T180 Arg2:T181
+R170	target Arg1:T180 Arg2:T182
+R171	target Arg1:T180 Arg2:T183
+R172	target Arg1:T180 Arg2:T184
+R173	has-property Arg1:T185 Arg2:T176
+R174	in-context Arg1:T185 Arg2:T177
+R175	target Arg1:T185 Arg2:T186
+R176	target Arg1:T186 Arg2:T181
+R177	target Arg1:T186 Arg2:T182
+R178	target Arg1:T186 Arg2:T183
+R179	target Arg1:T186 Arg2:T184
+R180	in-context Arg1:T186 Arg2:T187
+R181	in-time Arg1:T187 Arg2:T174
+R182	target Arg1:T187 Arg2:T178
+R183	target Arg1:T187 Arg2:T179
+R184	entails Arg1:T187 Arg2:T185
+T189	Predicate 2456 2459	que
+T190	Reference 2432 2434	se
+T191	Concept 2425 2431	vacuna
+T192	Action 2440 2450	fabricando
+T193	Action 2466 2474	probarse
+T194	Concept 2475 2482	primero
+T195	Concept 2486 2494	animales
+R185	subject Arg1:T192 Arg2:T191
+R186	in-context Arg1:T192 Arg2:T193
+R187	subject Arg1:T193 Arg2:T191
+R188	in-place Arg1:T193 Arg2:T195
+R189	in-context Arg1:T195 Arg2:T194
+T196	Concept 2513 2518	virus
+T197	Concept 2531 2540	2019-nCoV
+T198	Concept 2558 2563	novel
+T199	Concept 2564 2575	coronavirus
+T200	Concept 2496 2508	Inicialmente
+T201	Action 2523 2530	llamado
+T202	Concept 2553 2563;2564 2575	2019-novel coronavirus
+*	same-as T197 T202
+R190	subject Arg1:T201 Arg2:T196
+R191	target Arg1:T201 Arg2:T197
+R192	in-time Arg1:T201 Arg2:T200
+T203	Concept 2670 2678	SARS-CoV
+T204	Concept 2670 2674	SARS
+T205	Concept 2591 2597;2598 2600	allele 60
+T206	Concept 2627 2634	founder
+T207	Concept 2635 2642	PWK/PhJ
+T208	Action 2656 2662	driver
+T209	Concept 2679 2684	titer
+T210	Concept 2692 2696	lung
+R193	causes Arg1:T205 Arg2:T208
+R194	is-a Arg1:T207 Arg2:T206
+R195	subject Arg1:T208 Arg2:T207
+R196	target Arg1:T208 Arg2:T209
+R197	has-property Arg1:T209 Arg2:T203
+R198	in-place Arg1:T209 Arg2:T210
+T211	Concept 2701 2706;2707 2714	ondas sonoras
+T212	Action 2715 2721	entran
+T213	Concept 2729 2733;2734 2741	oído externo
+T214	Predicate 2722 2725	por
+R199	subject Arg1:T212 Arg2:T211
+R200	in-place Arg1:T212 Arg2:T213
+T215	Predicate 2787 2790	que
+T216	Concept 2746 2751	nariz
+T217	Concept 2769 2776;2777 2786	células nerviosas
+T218	Action 2791 2797	ayudan
+T219	Concept 2801 2808;2809 2812;2813 2819	sentido del olfato
+T220	Predicate 2798 2800	al
+R201	part-of Arg1:T217 Arg2:T216
+R202	subject Arg1:T218 Arg2:T217
+R203	target Arg1:T218 Arg2:T219
+T221	Action 2868 2879	infecciones
+T222	Action 2824 2834	suministro
+T223	Concept 2838 2842	agua
+T224	Concept 2843 2854	contaminada
+T225	Concept 2884 2892	giardias
+T226	Predicate 2880 2883	por
+R204	target Arg1:T221 Arg2:T225
+R205	causes Arg1:T222 Arg2:T221
+R206	target Arg1:T222 Arg2:T223
+R207	in-context Arg1:T223 Arg2:T224
+T227	Concept 2898 2910	enfermedades
+T228	Concept 2932 2942	garrapatas
+T229	Concept 2962 2967	mundo
+T230	Concept 2999 3007	jardines
+T231	Predicate 2924 2927	por
+R208	in-place Arg1:T227 Arg2:T229
+R209	in-place Arg1:T227 Arg2:T230
+R210	causes Arg1:T228 Arg2:T227
+T232	Concept 3009 3017	SARS-CoV
+T233	Concept 3009 3013	SARS
+T234	Concept 3009 3019	SARS-CoV-2
+T235	Concept 3025 3036	coronavirus
+T236	Concept 3042 3056	positive-sense
+T237	Concept 3058 3072	singlestranded
+T238	Concept 3073 3076	RNA
+T239	Concept 3083 3087	30kb
+T240	Concept 3091 3097	length
+R211	is-a Arg1:T234 Arg2:T235
+R212	has-part Arg1:T234 Arg2:T238
+R213	has-property Arg1:T238 Arg2:T236
+R214	has-property Arg1:T238 Arg2:T237
+R215	has-property Arg1:T238 Arg2:T239
+R216	in-context Arg1:T239 Arg2:T240
+T241	Concept 3111 3121;3122 3129	N-terminal regions
+T242	Concept 3133 3134;3135 3143	S proteins
+T243	Action 3163 3174	differences
+T244	Concept 3122 3129	regions
+R217	in-context Arg1:T241 Arg2:T242
+R218	subject Arg1:T243 Arg2:T241
+T245	Concept 3181 3193	medicamentos
+T246	Reference 3175 3180	Estos
+T247	Concept 3205 3214	pastillas
+T248	Concept 3216 3224	líquidos
+T249	Concept 3227 3234	parches
+R219	is-a Arg1:T246 Arg2:T245
+R220	is-a Arg1:T247 Arg2:T246
+R221	is-a Arg1:T248 Arg2:T246
+R222	is-a Arg1:T249 Arg2:T246
+T250	Concept 3246 3256;3257 3263	C-terminal domain
+T251	Concept 3267 3269	XP
+T252	Concept 3285 3293;3294 3310	membrane permeabilization
+T253	Concept 3328 3336	features
+T254	Concept 3342 3351	viroporin
+T255	Predicate 3257 3263	domain
+R223	in-context Arg1:T250 Arg2:T251
+R224	has-property Arg1:T250 Arg2:T253
+R225	entails Arg1:T252 Arg2:T250
+R226	in-context Arg1:T253 Arg2:T254
+T256	Predicate 3379 3382	que
+T257	Reference 3365 3367	se
+T258	Concept 3386 3390	caso
+T259	Action 3368 3375	informa
+T260	Concept 3399 3406	período
+T261	Concept 3410 3420	incubación
+T262	Concept 3424 3426;3427 3431	27 días
+R227	has-property Arg1:T258 Arg2:T260
+R228	target Arg1:T259 Arg2:T258
+R229	in-context Arg1:T260 Arg2:T261
+R230	in-time Arg1:T261 Arg2:T262
+T263	Action 3718 3726	affected
+T264	Concept 3504 3512	SARS-CoV
+T265	Concept 3443 3452	2019-nCoV
+T266	Concept 3646 3655	2019-nCoV
+T267	Concept 3453 3459	genome
+T268	Concept 3513 3519	genome
+T269	Action 3460 3468	exhibits
+T270	Predicate 3481 3491	similarity
+T271	Concept 3499 3503;3504 3512	2002 SARS-CoV
+T272	Concept 3524 3532	proteome
+T273	Concept 3601 3609	proteome
+T274	Concept 3656 3664	proteome
+T275	Predicate 3555 3559	many
+T276	Action 3567 3579	interactions
+T277	Concept 3504 3508	SARS
+T278	Concept 3596 3600	SARS
+T279	Concept 3699 3706;3707 3712	binding sites
+T280	Action 3699 3706	binding
+R231	target Arg1:T263 Arg2:T279
+R232	in-context Arg1:T267 Arg2:T265
+R233	in-context Arg1:T267 Arg2:T266
+R234	in-place Arg1:T267 Arg2:T271
+R235	in-context Arg1:T268 Arg2:T265
+R236	in-context Arg1:T268 Arg2:T266
+R237	in-place Arg1:T268 Arg2:T271
+R238	subject Arg1:T269 Arg2:T267
+R239	subject Arg1:T269 Arg2:T268
+R240	target Arg1:T269 Arg2:T270
+R241	entails Arg1:T269 Arg2:T275
+R242	domain Arg1:T270 Arg2:T267
+R243	domain Arg1:T270 Arg2:T268
+R244	domain Arg1:T270 Arg2:T272
+R245	domain Arg1:T270 Arg2:T273
+R246	domain Arg1:T270 Arg2:T274
+R247	in-context Arg1:T272 Arg2:T265
+R248	in-context Arg1:T272 Arg2:T266
+R249	in-place Arg1:T272 Arg2:T271
+R250	in-context Arg1:T272 Arg2:T277
+R251	in-context Arg1:T272 Arg2:T278
+R252	in-context Arg1:T273 Arg2:T265
+R253	in-context Arg1:T273 Arg2:T266
+R254	in-place Arg1:T273 Arg2:T271
+R255	in-context Arg1:T273 Arg2:T277
+R256	in-context Arg1:T273 Arg2:T278
+R257	in-context Arg1:T274 Arg2:T265
+R258	in-context Arg1:T274 Arg2:T266
+R259	in-place Arg1:T274 Arg2:T271
+R260	in-context Arg1:T274 Arg2:T277
+R261	in-context Arg1:T274 Arg2:T278
+R262	in-place Arg1:T275 Arg2:T272
+R263	in-place Arg1:T275 Arg2:T273
+R264	in-place Arg1:T275 Arg2:T274
+T281	Predicate 3792 3795	que
+T282	Concept 3823 3826	dos
+T283	Concept 3727 3734;3735 3741	Estados Unidos
+T284	Action 3750 3755	niega
+T285	Concept 3759 3766	entrada
+T286	Concept 3776 3791	estadounidenses
+T287	Action 3800 3807	viajado
+T288	Concept 3810 3815	China
+T289	Concept 3827 3834	semanas
+T290	Predicate 3835 3845	anteriores
+R265	subject Arg1:T284 Arg2:T283
+R266	target Arg1:T284 Arg2:T285
+R267	in-context Arg1:T284 Arg2:T287
+R268	subject Arg1:T287 Arg2:T286
+R269	target Arg1:T287 Arg2:T288
+R270	in-time Arg1:T287 Arg2:T290
+R271	arg Arg1:T290 Arg2:T282
+R272	domain Arg1:T290 Arg2:T289
+T291	Concept 3942 3950	COVID-19
+T292	Predicate 3847 3848;3849 3855	A partir
+T293	Concept 3860 3862;3863 3865;3866 3871;3872 3874;3875 3879	17 de marzo de 2020
+T294	Predicate 3881 3886	todos
+T295	Concept 3891 3897	países
+T296	Concept 3998 4004	países
+T297	Concept 3901 3907	Europa
+T298	Action 3912 3921	informado
+T299	Action 4009 4018	informado
+T300	Concept 3934 3938	caso
+T301	Concept 3960 3970	Montenegro
+T302	Concept 3974 3980	último
+T303	Concept 3995 3997;3998 4004	18 países
+T304	Concept 4032 4038	muerte
+T305	Predicate 3922 3924	al
+T306	Predicate 4019 4021	al
+R273	arg Arg1:T292 Arg2:T293
+R274	domain Arg1:T294 Arg2:T295
+R275	domain Arg1:T294 Arg2:T296
+R276	in-place Arg1:T295 Arg2:T297
+R277	in-place Arg1:T296 Arg2:T297
+R278	in-time Arg1:T298 Arg2:T292
+R279	subject Arg1:T298 Arg2:T294
+R280	target Arg1:T298 Arg2:T300
+R281	subject Arg1:T298 Arg2:T303
+R282	target Arg1:T298 Arg2:T304
+R283	in-time Arg1:T299 Arg2:T292
+R284	subject Arg1:T299 Arg2:T294
+R285	target Arg1:T299 Arg2:T300
+R286	subject Arg1:T299 Arg2:T303
+R287	target Arg1:T299 Arg2:T304
+R288	in-context Arg1:T300 Arg2:T291
+R289	is-a Arg1:T301 Arg2:T298
+R290	is-a Arg1:T301 Arg2:T299
+R291	has-property Arg1:T301 Arg2:T302
+T307	Concept 4049 4057	SARS-CoV
+T308	Concept 4049 4053	SARS
+T309	Reference 4069 4073	same
+T310	Concept 4074 4082	receptor
+T311	Action 4092 4100	detected
+T312	Concept 4104 4112;4113 4119	skeletal muscle
+T313	Concept 4123 4134	post-mortem
+T314	Action 4135 4146	examination
+R292	is-a Arg1:T309 Arg2:T310
+R293	target Arg1:T311 Arg2:T307
+R294	in-context Arg1:T311 Arg2:T309
+R295	in-place Arg1:T311 Arg2:T312
+R296	entails Arg1:T314 Arg2:T311
+R297	target Arg1:T314 Arg2:T312
+R298	in-context Arg1:T314 Arg2:T313
+T315	Predicate 4322 4325	que
+T316	Concept 4251 4255	caso
+T317	Predicate 4329 4335	primer
+T318	Concept 4150 4152;4153 4155;4156 4160;4161 4163;4164 4168	12 de mayo de 2013
+T319	Concept 4173 4183;4184 4186;4187 4194;4195 4203;4204 4205;4206 4213	Ministerio de Asuntos Sociales y Sanidad
+T320	Concept 4214 4221	francés
+T321	Action 4222 4230	confirmó
+T322	Concept 4256 4266	secundario
+T323	Concept 4273 4278	varón
+T324	Concept 4279 4290	previamente
+T325	Action 4291 4304	hospitalizado
+T326	Predicate 4311 4316	misma
+T327	Concept 4317 4321	sala
+T328	Concept 4336 4344	paciente
+R299	in-context Arg1:T316 Arg2:T322
+R300	in-context Arg1:T316 Arg2:T325
+R301	domain Arg1:T317 Arg2:T316
+R302	domain Arg1:T317 Arg2:T328
+R303	in-context Arg1:T319 Arg2:T320
+R304	target Arg1:T321 Arg2:T316
+R305	in-time Arg1:T321 Arg2:T318
+R306	subject Arg1:T321 Arg2:T319
+R307	subject Arg1:T325 Arg2:T323
+R308	in-time Arg1:T325 Arg2:T324
+R309	in-place Arg1:T325 Arg2:T326
+R310	arg Arg1:T326 Arg2:T317
+R311	domain Arg1:T326 Arg2:T327
+T329	Concept 4491 4499	SARS-CoV
+T330	Concept 4491 4495	SARS
+T331	Concept 4491 4501	SARS-CoV-2
+T332	Predicate 4414 4417	que
+T333	Predicate 4462 4465	que
+T334	Concept 4477 4486	infección
+T335	Concept 4346 4360	Investigadores
+T336	Concept 4367 4378;4379 4381;4382 4389	Universidad de Utrecht
+T337	Concept 4392 4399;4400 4402	Erasmus MC
+T338	Action 4403 4413	anunciaron
+T339	Action 4418 4429	encontraron
+T340	Concept 4433 4443	anticuerpo
+T341	Concept 4444 4454	monoclonal
+T342	Concept 4455 4461	humano
+T343	Action 4466 4473	bloquea
+T344	Predicate 4487 4490	por
+R312	in-context Arg1:T334 Arg2:T331
+R313	in-place Arg1:T335 Arg2:T336
+R314	in-place Arg1:T335 Arg2:T337
+R315	subject Arg1:T338 Arg2:T335
+R316	target Arg1:T338 Arg2:T339
+R317	target Arg1:T339 Arg2:T343
+R318	in-context Arg1:T340 Arg2:T341
+R319	in-context Arg1:T340 Arg2:T342
+R320	target Arg1:T343 Arg2:T334
+R321	subject Arg1:T343 Arg2:T340
+T345	Concept 4511 4524;4525 4532	homopolymeric stretch
+T346	Concept 4536 4538;4539 4548;4549 4560	5' adenosine nucleotides
+T347	Action 4572 4583	destabilize
+T348	Concept 4584 4589;4590 4597	eIF4E binding
+T349	Concept 4605 4609	mRNA
+T350	Concept 4610 4613	cap
+T351	Action 4590 4597	binding
+R322	in-context Arg1:T346 Arg2:T345
+R323	subject Arg1:T347 Arg2:T346
+R324	target Arg1:T347 Arg2:T348
+R325	in-context Arg1:T348 Arg2:T350
+R326	part-of Arg1:T350 Arg2:T349
+T352	Concept 4680 4685	third
+T353	Predicate 4621 4625	half
+T354	Concept 4629 4637	patients
+T355	Concept 4689 4697	patients
+T356	Action 4645 4654	increased
+T357	Predicate 4655 4661	levels
+T358	Predicate 4734 4740	levels
+T359	Concept 4665 4668	LDH
+T360	Predicate 4676 4685	one-third
+T361	Concept 4707 4712	liver
+T362	Action 4713 4719	injury
+T363	Action 4724 4733	decreased
+T364	Concept 4744 4754	prealbumin
+R327	domain Arg1:T353 Arg2:T354
+R328	domain Arg1:T353 Arg2:T355
+R329	in-context Arg1:T356 Arg2:T353
+R330	target Arg1:T356 Arg2:T357
+R331	target Arg1:T356 Arg2:T358
+R332	in-context Arg1:T357 Arg2:T359
+R333	in-context Arg1:T357 Arg2:T364
+R334	in-context Arg1:T358 Arg2:T359
+R335	in-context Arg1:T358 Arg2:T364
+R336	domain Arg1:T360 Arg2:T354
+R337	domain Arg1:T360 Arg2:T355
+R338	in-place Arg1:T361 Arg2:T354
+R339	in-place Arg1:T361 Arg2:T355
+R340	subject Arg1:T362 Arg2:T360
+R341	target Arg1:T362 Arg2:T361
+R342	target Arg1:T363 Arg2:T357
+R343	target Arg1:T363 Arg2:T358
+R344	in-context Arg1:T363 Arg2:T360
+T365	Concept 4890 4895	virus
+T366	Predicate 4766 4769	que
+T367	Concept 4774 4783	afectados
+T368	Concept 4801 4809	contacto
+T369	Predicate 4813 4819	alguna
+T370	Concept 4820 4825	forma
+T371	Concept 4881 4886	forma
+T372	Concept 4830 4841	murciélagos
+T373	Concept 4848 4859	excrementos
+T374	Action 4861 4872	contrayendo
+R345	domain Arg1:T369 Arg2:T370
+R346	domain Arg1:T369 Arg2:T371
+R347	in-context Arg1:T373 Arg2:T372
+R348	target Arg1:T374 Arg2:T365
+R349	subject Arg1:T374 Arg2:T367
+T375	Concept 4944 4949	virus
+T376	Concept 4912 4920	SARS-Cov
+T377	Concept 4953 4962	2019-nCoV
+T378	Concept 4912 4916	SARS
+T379	Predicate 4936 4943	related
+T380	Predicate 4928 4935	closest
+T381	Concept 4997 5005	epitopes
+T382	Action 5015 5022	defined
+T383	Concept 5026 5032	humans
+T384	Reference 5038 5043	other
+T385	Concept 5044 5051	species
+T386	Concept 5075 5080;5081 5088	human disease
+T387	Concept 5094 5100	lethal
+T388	Concept 4987 4993	number
+T389	Concept 5075 5080	human
+T390	Concept 5081 5088	disease
+R350	is-a Arg1:T376 Arg2:T375
+R351	has-property Arg1:T376 Arg2:T380
+R352	causes Arg1:T376 Arg2:T386
+R353	arg Arg1:T379 Arg2:T376
+R354	arg Arg1:T379 Arg2:T377
+R355	domain Arg1:T380 Arg2:T375
+R356	arg Arg1:T380 Arg2:T377
+R357	in-context Arg1:T382 Arg2:T376
+R358	target Arg1:T382 Arg2:T381
+R359	in-place Arg1:T382 Arg2:T383
+R360	is-a Arg1:T383 Arg2:T385
+R361	has-property Arg1:T386 Arg2:T387
+T391	Predicate 5167 5170	que
+T392	Concept 5122 5128	drogas
+T393	Concept 5141 5149	problema
+T394	Concept 5153 5158;5159 5166	salud pública
+T395	Action 5171 5177	afecta
+T396	Concept 5195 5206	comunidades
+T397	Concept 5209 5217	familias
+R362	is-a Arg1:T392 Arg2:T393
+R363	in-context Arg1:T393 Arg2:T394
+R364	subject Arg1:T395 Arg2:T392
+R365	target Arg1:T395 Arg2:T396
+R366	target Arg1:T395 Arg2:T397
+T398	Action 5241 5251	informaron
+T399	Concept 5255 5262	escasez
+T400	Predicate 5266 5273	ciertos
+T401	Concept 5274 5283	productos
+T402	Concept 5284 5291	básicos
+T403	Concept 5296 5301	hogar
+R367	target Arg1:T398 Arg2:T399
+R368	in-context Arg1:T399 Arg2:T400
+R369	domain Arg1:T400 Arg2:T401
+R370	in-context Arg1:T400 Arg2:T402
+R371	in-context Arg1:T402 Arg2:T403
+T404	Concept 5417 5425	patients
+T405	Concept 5486 5494	patients
+T406	Concept 5308 5314	common
+T407	Concept 5336 5344	COVID-19
+T408	Concept 5315 5323	systemic
+T409	Concept 5324 5332	symptoms
+T410	Concept 5354 5359	fever
+T411	Concept 5361 5368	fatigue
+T412	Concept 5370 5376	sputum
+T413	Concept 5381 5388	myalgia
+R372	in-context Arg1:T404 Arg2:T407
+R373	in-context Arg1:T405 Arg2:T407
+R374	causes Arg1:T407 Arg2:T409
+R375	has-property Arg1:T409 Arg2:T406
+R376	has-property Arg1:T409 Arg2:T408
+R377	is-a Arg1:T410 Arg2:T409
+R378	is-a Arg1:T411 Arg2:T409
+R379	is-a Arg1:T412 Arg2:T409
+R380	is-a Arg1:T413 Arg2:T409
+T414	Concept 5513 5521	obesidad
+T415	Action 5525 5533	presenta
+T416	Predicate 5541 5551	transcurso
+T417	Concept 5556 5562	tiempo
+T418	Action 5574 5582	ingieren
+T419	Predicate 5583 5586	más
+T420	Concept 5587 5595	calorías
+T421	Predicate 5596 5599	que
+T422	Predicate 5609 5612	que
+T423	Reference 5600 5608	aquellas
+T424	Action 5613 5620	consume
+T425	Reference 5522 5524	se
+T426	Reference 5571 5573	se
+R381	target Arg1:T415 Arg2:T414
+R382	in-time Arg1:T415 Arg2:T416
+R383	arg Arg1:T416 Arg2:T417
+R384	causes Arg1:T418 Arg2:T415
+R385	target Arg1:T418 Arg2:T421
+R386	target Arg1:T418 Arg2:T422
+R387	domain Arg1:T419 Arg2:T420
+R388	arg Arg1:T421 Arg2:T419
+R389	domain Arg1:T421 Arg2:T424
+R390	arg Arg1:T422 Arg2:T419
+R391	domain Arg1:T422 Arg2:T424
+R392	is-a Arg1:T423 Arg2:T420
+R393	target Arg1:T424 Arg2:T423
+T427	Predicate 5651 5654	que
+T428	Concept 5703 5708	nariz
+T429	Concept 5694 5698	ojos
+T430	Concept 5625 5631	hollín
+T431	Action 5632 5640	cubierto
+T432	Concept 5645 5650	savia
+T433	Action 5655 5660	vuela
+T434	Concept 5667 5671	aire
+T435	Action 5678 5686	penetrar
+T436	Concept 5713 5721	garganta
+T437	Concept 5727 5734;5735 5747	sistema respiratorio
+T438	Predicate 5641 5644	por
+R394	subject Arg1:T431 Arg2:T430
+R395	target Arg1:T431 Arg2:T432
+R396	subject Arg1:T433 Arg2:T431
+R397	in-place Arg1:T433 Arg2:T434
+R398	in-place Arg1:T435 Arg2:T428
+R399	in-place Arg1:T435 Arg2:T429
+R400	subject Arg1:T435 Arg2:T433
+R401	in-place Arg1:T435 Arg2:T436
+R402	in-place Arg1:T435 Arg2:T437
+T439	Concept 5752 5760	comienzo
+T440	Action 5765 5776	tratamiento
+T441	Concept 5784 5794	torceduras
+T442	Concept 5801 5813	distensiones
+T443	Action 5831 5837	reposo
+T444	Concept 5842 5846	área
+T445	Concept 5895 5899	área
+T446	Concept 5847 5855	afectada
+T447	Concept 5857 5862	hielo
+T448	Concept 5871 5877	vendas
+T449	Action 5880 5890	compresión
+T450	Concept 5902 5911	medicinas
+T451	Predicate 5749 5751	Al
+T452	Action 5864 5867	uso
+R403	in-time Arg1:T440 Arg2:T439
+R404	target Arg1:T440 Arg2:T441
+R405	target Arg1:T440 Arg2:T442
+R406	part-of Arg1:T443 Arg2:T440
+R407	in-place Arg1:T443 Arg2:T444
+R408	in-place Arg1:T443 Arg2:T445
+R409	in-context Arg1:T444 Arg2:T446
+R410	in-context Arg1:T445 Arg2:T446
+R411	part-of Arg1:T447 Arg2:T440
+R412	part-of Arg1:T448 Arg2:T440
+R413	part-of Arg1:T449 Arg2:T440
+R414	in-place Arg1:T449 Arg2:T444
+R415	in-place Arg1:T449 Arg2:T445
+R416	part-of Arg1:T450 Arg2:T440
+T453	Predicate 5947 5950	que
+T454	Reference 5965 5967	se
+T455	Action 5916 5923	pérdida
+T456	Concept 5927 5934;5935 5945	células cerebrales
+T457	Concept 5977 5984;5985 5993	derrame cerebral
+T458	Action 6001 6008	afectar
+T459	Concept 6012 6021	capacidad
+T460	Action 6025 6031	pensar
+T461	Concept 6036 6044	claridad
+R417	target Arg1:T455 Arg2:T456
+R418	causes Arg1:T455 Arg2:T458
+R419	causes Arg1:T457 Arg2:T455
+R420	target Arg1:T458 Arg2:T459
+R421	in-context Arg1:T459 Arg2:T460
+R422	in-context Arg1:T460 Arg2:T461
+T462	Concept 6089 6092	two
+T463	Concept 6061 6064	EVC
+T464	Concept 6069 6073	EVC2
+T465	Concept 6093 6101	paralogs
+T466	Concept 6103 6109	EVC3.1
+T467	Concept 6114 6120	EVC3.2
+T468	Concept 6134 6150	choanoflagellate
+T469	Concept 6152 6155;6156 6163	sea anenome
+T470	Concept 6168 6171;6172 6178;6179 6187	sea urchin ciliomes
+R423	is-a Arg1:T463 Arg2:T465
+R424	is-a Arg1:T464 Arg2:T465
+R425	is-a Arg1:T466 Arg2:T465
+R426	part-of Arg1:T466 Arg2:T468
+R427	part-of Arg1:T466 Arg2:T469
+R428	part-of Arg1:T466 Arg2:T470
+R429	is-a Arg1:T467 Arg2:T465
+R430	part-of Arg1:T467 Arg2:T468
+R431	part-of Arg1:T467 Arg2:T469
+R432	part-of Arg1:T467 Arg2:T470
+T471	Concept 6210 6215	virus
+T472	Reference 6216 6218	se
+T473	Action 6196 6205	detección
+T474	Action 6226 6234	utilizar
+T475	Concept 6235 6243	muestras
+T476	Concept 6247 6253	esputo
+T477	Concept 6256 6265	secreción
+T478	Concept 6266 6278	nasofaringea
+R433	target Arg1:T473 Arg2:T471
+R434	in-context Arg1:T474 Arg2:T473
+R435	target Arg1:T474 Arg2:T475
+R436	target Arg1:T474 Arg2:T477
+R437	in-context Arg1:T475 Arg2:T476
+R438	in-context Arg1:T477 Arg2:T478
+T479	Concept 6355 6359	data
+T480	Concept 6380 6388	SARS-CoV
+T481	Concept 6380 6384	SARS
+T482	Concept 6380 6390	SARS-CoV-2
+T483	Concept 6346 6354	official
+T484	Action 6367 6376	diffusion
+T485	Action 6392 6403;6404 6406	responsible of
+T486	Concept 6422 6429	disease
+T487	Concept 6431 6439	COIVD-19
+T488	Action 6473 6479	suffer
+T489	Concept 6487 6493	strong
+T490	Concept 6494 6502	downward
+T491	Concept 6503 6507	bias
+R439	has-property Arg1:T479 Arg2:T483
+R440	in-context Arg1:T479 Arg2:T484
+R441	subject Arg1:T484 Arg2:T482
+R442	subject Arg1:T485 Arg2:T482
+R443	target Arg1:T485 Arg2:T487
+R444	is-a Arg1:T487 Arg2:T486
+R445	subject Arg1:T488 Arg2:T479
+R446	target Arg1:T488 Arg2:T491
+R447	has-property Arg1:T491 Arg2:T489
+R448	has-property Arg1:T491 Arg2:T490
+T492	Concept 6593 6601	SARS-CoV
+T493	Concept 6593 6597	SARS
+T494	Concept 6632 6635	RNA
+T495	Concept 6508 6521	Superposition
+T496	Concept 6529 6539;6540 6549	elongation complexes
+T497	Concept 6553 6563;6564 6566	poliovirus 23
+T498	Concept 6571 6580;6581 6583	norovirus 24
+T499	Concept 6593 6601;6602 6607	SARS-CoV NSP12
+T500	Action 6608 6615	reveals
+T501	Concept 6620 6624	path
+T502	Concept 6645 6651;6652 6656	active site
+T503	Action 6661 6670	indicates
+T504	Concept 6671 6676;6677 6682	amino acids
+T505	Action 6695 6702	binding
+T506	Action 6706 6715	catalysis
+R449	causes Arg1:T494 Arg2:T501
+R450	in-place Arg1:T494 Arg2:T502
+R451	has-part Arg1:T496 Arg2:T497
+R452	has-part Arg1:T496 Arg2:T498
+R453	has-part Arg1:T499 Arg2:T496
+R454	has-part Arg1:T499 Arg2:T498
+R455	subject Arg1:T500 Arg2:T495
+R456	target Arg1:T500 Arg2:T501
+R457	subject Arg1:T503 Arg2:T495
+R458	target Arg1:T503 Arg2:T504
+R459	subject Arg1:T505 Arg2:T504
+R460	subject Arg1:T506 Arg2:T504
+T507	Concept 6845 6851	number
+T508	Concept 6744 6752	unlikely
+T509	Concept 6798 6806	COVID-19
+T510	Concept 6786 6793	control
+T511	Action 6726 6740	superspreading
+T512	Concept 6807 6815	outbreak
+T513	Action 6819 6827	reducing
+T514	Concept 6832 6844	reproduction
+T515	Predicate 6855 6860	below
+T516	Concept 6861 6866	unity
+R461	in-context Arg1:T507 Arg2:T514
+R462	in-context Arg1:T507 Arg2:T515
+R463	has-property Arg1:T511 Arg2:T508
+R464	in-context Arg1:T512 Arg2:T509
+R465	target Arg1:T513 Arg2:T507
+R466	in-context Arg1:T515 Arg2:T516
+T517	Concept 6939 6948	2019-nCoV
+T518	Concept 6891 6899	receptor
+T519	Reference 6998 7003	other
+T520	Predicate 6974 6981	between
+T521	Action 6949 6954	arose
+T522	Action 6960 6973	recombination
+T523	Concept 6982 6987;6988 6989	clade 1
+T524	Concept 7004 7010	clades
+R467	in-context Arg1:T519 Arg2:T524
+R468	target Arg1:T521 Arg2:T517
+R469	subject Arg1:T522 Arg2:T519
+R470	causes Arg1:T522 Arg2:T521
+R471	subject Arg1:T522 Arg2:T523
+T525	Concept 7140 7148	SARS-CoV
+T526	Concept 7140 7144	SARS
+T527	Concept 7209 7214	cases
+T528	Concept 7234 7244	successful
+T529	Concept 7140 7150	SARS-CoV-2
+T530	Concept 7098 7105	disease
+T531	Concept 7036 7041	rapid
+T532	Action 7042 7051	diagnosis
+T533	Action 7056 7065	isolation
+T534	Action 7189 7198	isolation
+T535	Concept 7069 7079	infections
+T536	Concept 7089 7097	COVID-19
+T537	Concept 7106 7111	alone
+T538	Concept 7119 7126	control
+T539	Concept 7127 7136	outbreaks
+T540	Action 7177 7184	tracing
+T541	Concept 7202 7208	traced
+R472	has-property Arg1:T527 Arg2:T541
+*	same-as T529 T536
+R473	has-property Arg1:T532 Arg2:T531
+R474	target Arg1:T532 Arg2:T535
+R475	target Arg1:T533 Arg2:T527
+R476	has-property Arg1:T533 Arg2:T531
+R477	target Arg1:T533 Arg2:T535
+R478	target Arg1:T534 Arg2:T527
+R479	has-property Arg1:T534 Arg2:T531
+R480	target Arg1:T534 Arg2:T535
+R481	in-context Arg1:T535 Arg2:T536
+R482	in-context Arg1:T539 Arg2:T529
+T542	Concept 7249 7261	off-diagonal
+T543	Concept 7262 7269	numbers
+T544	Concept 7274 7279	genes
+T545	Concept 7290 7302	differential
+T546	Concept 7303 7313	expression
+T547	Concept 7317 7320	two
+T548	Concept 7321 7328	viruses
+T549	Action 7333 7341	compared
+T550	Concept 7345 7349	mock
+T551	Concept 7358 7363	third
+T552	Concept 7364 7369	virus
+T553	Reference 7417 7422	other
+R483	in-context Arg1:T543 Arg2:T542
+R484	is-a Arg1:T543 Arg2:T544
+R485	has-property Arg1:T543 Arg2:T546
+R486	has-property Arg1:T546 Arg2:T545
+R487	in-place Arg1:T546 Arg2:T547
+R488	in-context Arg1:T547 Arg2:T548
+R489	target Arg1:T549 Arg2:T543
+R490	target Arg1:T549 Arg2:T550
+R491	target Arg1:T549 Arg2:T552
+R492	has-property Arg1:T552 Arg2:T551
+T554	Predicate 7521 7524	que
+T555	Predicate 7483 7490	algunas
+T556	Concept 7534 7539	Wuhan
+T557	Concept 7509 7520	importantes
+T558	Concept 7429 7434	tarde
+T559	Concept 7438 7440;7441 7446	23 enero
+T560	Concept 7452 7463	autoridades
+T561	Action 7464 7473	empezaron
+T562	Action 7476 7482	cerrar
+T563	Concept 7498 7508	carreteras
+T564	Action 7525 7530	salen
+R493	domain Arg1:T555 Arg2:T564
+R494	in-time Arg1:T561 Arg2:T558
+R495	in-time Arg1:T561 Arg2:T559
+R496	subject Arg1:T561 Arg2:T560
+R497	target Arg1:T561 Arg2:T562
+R498	target Arg1:T562 Arg2:T555
+R499	in-context Arg1:T563 Arg2:T557
+R500	target Arg1:T564 Arg2:T556
+R501	subject Arg1:T564 Arg2:T563
+T565	Concept 7541 7545;7546 7551	MSIR model
+T566	Action 7552 7560	predicts
+T567	Concept 7563 7570	earlier
+T568	Concept 7575 7581	higher
+T569	Concept 7582 7592	infectious
+T570	Concept 7593 7597	peak
+T571	Predicate 7598 7606	position
+T572	Concept 7546 7551	model
+T573	Concept 7618 7623	model
+R502	subject Arg1:T566 Arg2:T565
+R503	target Arg1:T566 Arg2:T571
+R504	in-context Arg1:T570 Arg2:T569
+R505	has-property Arg1:T571 Arg2:T567
+R506	has-property Arg1:T571 Arg2:T568
+R507	domain Arg1:T571 Arg2:T570
+T574	Concept 7698 7706	Hospital
+T575	Concept 7669 7677	COVID-19
+T576	Concept 7650 7654	caso
+T577	Concept 7627 7629;7630 7632;7633 7638	26 de enero
+T578	Predicate 7643 7649	primer
+T579	Concept 7655 7665	sospechoso
+T580	Action 7682 7691	ingresado
+T581	Concept 7707 7713;7714 7719;7720 7725	Kaiser Franz Josef
+T582	Concept 7729 7734	Viena
+R508	in-context Arg1:T576 Arg2:T575
+R509	in-context Arg1:T576 Arg2:T579
+R510	domain Arg1:T578 Arg2:T576
+R511	in-context Arg1:T579 Arg2:T575
+R512	in-time Arg1:T580 Arg2:T577
+R513	subject Arg1:T580 Arg2:T578
+R514	in-place Arg1:T580 Arg2:T581
+R515	is-a Arg1:T581 Arg2:T574
+R516	in-place Arg1:T581 Arg2:T582
+T583	Concept 7778 7790	tratamientos
+T584	Concept 7800 7812	medicamentos
+T585	Concept 7814 7821	cirugía
+T586	Concept 7824 7835;7836 7838;7839 7851;7852 7860	tecnologías de reproducción asistida
+R517	part-of Arg1:T584 Arg2:T583
+R518	part-of Arg1:T585 Arg2:T583
+R519	part-of Arg1:T586 Arg2:T583
+T587	Concept 7957 7965	patients
+T588	Concept 7948 7956	COVID-19
+T589	Concept 7862 7873	Lymphopenia
+T590	Concept 7880 7889	effective
+T591	Concept 7894 7902	reliable
+T592	Action 7903 7912	indicator
+T593	Concept 7916 7924	severity
+T594	Concept 7929 7944	hospitalization
+R520	in-context Arg1:T587 Arg2:T588
+R521	is-a Arg1:T589 Arg2:T592
+R522	in-context Arg1:T592 Arg2:T587
+R523	has-property Arg1:T592 Arg2:T590
+R524	has-property Arg1:T592 Arg2:T591
+R525	target Arg1:T592 Arg2:T593
+R526	target Arg1:T592 Arg2:T594
+T595	Concept 8011 8019	mobility
+T596	Action 8020 8029	reduction
+T597	Action 8108 8117	reduction
+T598	Concept 8040 8051	effectively
+T599	Action 8052 8057	lower
+T600	Concept 8062 8071;8072 8076	incidence rate
+T601	Concept 8087 8103	transmissibility
+T602	Action 8131 8138	prevent
+T603	Concept 8143 8152	epidemics
+T604	Action 8166 8175	spreading
+T605	Concept 7966 7974	Previous
+R527	target Arg1:T596 Arg2:T595
+R528	target Arg1:T596 Arg2:T601
+R529	target Arg1:T597 Arg2:T595
+R530	target Arg1:T597 Arg2:T601
+R531	subject Arg1:T599 Arg2:T596
+R532	subject Arg1:T599 Arg2:T597
+R533	has-property Arg1:T599 Arg2:T598
+R534	target Arg1:T599 Arg2:T600
+R535	subject Arg1:T602 Arg2:T596
+R536	subject Arg1:T602 Arg2:T597
+R537	target Arg1:T602 Arg2:T604
+R538	subject Arg1:T604 Arg2:T603
+T606	Concept 8194 8202	SARS-CoV
+T607	Concept 8194 8198	SARS
+T608	Concept 8352 8357	cases
+T609	Concept 8194 8204	SARS-CoV-2
+T610	Concept 8180 8190	antibodies
+T611	Concept 8209 8217	specific
+T612	Concept 8219 8228	sensitive
+T613	Action 8258 8267	detection
+T614	Concept 8280 8286	faster
+T615	Concept 8291 8298	simpler
+T616	Concept 8304 8310	RT-PCR
+T617	Concept 8325 8330	rapid
+T618	Action 8331 8340	screening
+T619	Concept 8344 8351	suspect
+R539	has-property Arg1:T608 Arg2:T619
+R540	in-context Arg1:T610 Arg2:T609
+R541	has-property Arg1:T610 Arg2:T611
+R542	has-property Arg1:T610 Arg2:T612
+R543	subject Arg1:T613 Arg2:T610
+R544	has-property Arg1:T613 Arg2:T614
+R545	has-property Arg1:T613 Arg2:T615
+R546	entails Arg1:T613 Arg2:T618
+R547	in-context Arg1:T614 Arg2:T616
+R548	in-context Arg1:T615 Arg2:T616
+R549	target Arg1:T618 Arg2:T608
+R550	has-property Arg1:T618 Arg2:T617
+T620	Predicate 8421 8424	que
+T621	Reference 8373 8375	Se
+T622	Concept 8390 8395	casos
+T623	Action 8380 8389	producido
+T624	Concept 8402 8410	personal
+T625	Concept 8411 8420	sanitario
+T626	Action 8425 8432	atendía
+T627	Concept 8439 8448	pacientes
+R551	target Arg1:T623 Arg2:T622
+R552	in-place Arg1:T623 Arg2:T626
+R553	in-context Arg1:T624 Arg2:T625
+R554	subject Arg1:T626 Arg2:T624
+R555	target Arg1:T626 Arg2:T627
+T628	Concept 8450 8458	Pequeñas
+T629	Predicate 8459 8469	cantidades
+T630	Concept 8473 8478	orina
+T631	Action 8479 8485	fluyen
+T632	Concept 8493 8501	uréteres
+T633	Concept 8507 8513	vejiga
+T634	Predicate 8514 8518	cada
+T635	Predicate 8519 8521	10
+T636	Predicate 8524 8526	15
+T637	Concept 8527 8535	segundos
+R556	arg Arg1:T629 Arg2:T628
+R557	domain Arg1:T629 Arg2:T630
+R558	subject Arg1:T631 Arg2:T629
+R559	in-place Arg1:T631 Arg2:T632
+R560	in-place Arg1:T631 Arg2:T633
+R561	in-time Arg1:T631 Arg2:T634
+R562	arg Arg1:T634 Arg2:T635
+R563	arg Arg1:T634 Arg2:T636
+R564	domain Arg1:T635 Arg2:T637
+R565	domain Arg1:T636 Arg2:T637
+T638	Concept 8685 8696	coronavirus
+T639	Predicate 8546 8548	15
+T640	Predicate 8644 8647	más
+T641	Concept 8666 8671	casos
+T642	Concept 8718 8723	casos
+T643	Concept 8657 8662	mundo
+T644	Concept 8738 8746	personas
+T645	Predicate 8582 8584	al
+T646	Predicate 8537 8542	Hasta
+T647	Concept 8546 8548;8549 8551;8552 8557	15 de marzo
+T648	Concept 8569 8577	naciones
+T649	Concept 8594 8600	millón
+T650	Concept 8728 8734	millón
+T651	Concept 8604 8614	ciudadanos
+T652	Concept 8616 8621	Suiza
+T653	Concept 8631 8638	segunda
+T654	Concept 8639 8643	tasa
+T655	Concept 8648 8652	alta
+T656	Concept 8672 8681	positivos
+T657	Concept 8697 8700;8701 8707	per cápita
+T658	Concept 8712 8717;8718 8723	256.2 casos
+T659	Predicate 8724 8727	por
+R566	in-context Arg1:T640 Arg2:T641
+R567	in-context Arg1:T640 Arg2:T642
+R568	in-place Arg1:T640 Arg2:T643
+R569	domain Arg1:T640 Arg2:T654
+R570	arg Arg1:T640 Arg2:T655
+R571	in-context Arg1:T641 Arg2:T656
+R572	in-context Arg1:T641 Arg2:T657
+R573	in-context Arg1:T642 Arg2:T656
+R574	in-context Arg1:T642 Arg2:T657
+R575	arg Arg1:T646 Arg2:T647
+R576	in-context Arg1:T648 Arg2:T651
+R577	in-context Arg1:T651 Arg2:T649
+R578	in-context Arg1:T651 Arg2:T650
+R579	in-time Arg1:T652 Arg2:T646
+R580	is-a Arg1:T652 Arg2:T648
+R581	has-property Arg1:T652 Arg2:T653
+R582	in-context Arg1:T652 Arg2:T658
+R583	in-context Arg1:T653 Arg2:T640
+R584	in-context Arg1:T656 Arg2:T638
+R585	in-context Arg1:T658 Arg2:T659
+R586	domain Arg1:T659 Arg2:T644
+R587	arg Arg1:T659 Arg2:T649
+R588	arg Arg1:T659 Arg2:T650
+T660	Concept 8893 8901	SARS-CoV
+T661	Concept 8893 8897	SARS
+T662	Action 8904 8913	infection
+T663	Concept 8822 8829	pathway
+T664	Concept 8893 8903	SARS-CoV-2
+T665	Action 8778 8788	activation
+T666	Concept 8796 8811	interferon-MAPK
+T667	Concept 8812 8821;8822 8829	signaling pathway
+T668	Concept 8834 8837	TCR
+T669	Concept 8854 8864	antibodies
+T670	Action 8883 8892	combating
+R589	subject Arg1:T662 Arg2:T660
+R590	subject Arg1:T662 Arg2:T664
+R591	target Arg1:T665 Arg2:T667
+R592	in-context Arg1:T667 Arg2:T666
+R593	is-a Arg1:T668 Arg2:T669
+R594	in-context Arg1:T669 Arg2:T664
+R595	target Arg1:T670 Arg2:T662
+R596	subject Arg1:T670 Arg2:T665
+R597	subject Arg1:T670 Arg2:T668
+T671	Predicate 8966 8969	que
+T672	Concept 8933 8938;8939 8946	Salud Pública
+T673	Concept 8917 8929;8930 8932;8933 8938;8939 8946;8947 8949;8950 8960	Departamento de Salud Pública de California
+T674	Action 8961 8965	dijo
+T675	Reference 8970 8974	esto
+T676	Action 8981 8992	representar
+T677	Predicate 8996 9003	primera
+T678	Concept 9004 9015	transmisión
+T679	Concept 9016 9027	comunitaria
+T680	Concept 9034 9041	condado
+R598	subject Arg1:T674 Arg2:T673
+R599	target Arg1:T674 Arg2:T676
+R600	subject Arg1:T676 Arg2:T675
+R601	target Arg1:T676 Arg2:T677
+R602	in-place Arg1:T676 Arg2:T680
+R603	domain Arg1:T677 Arg2:T678
+R604	in-context Arg1:T677 Arg2:T679
+T681	Concept 9108 9111	two
+T682	Concept 9112 9121	specimens
+T683	Reference 9123 9127	both
+T684	Action 9148 9154	spread
+T685	Concept 9164 9169	holes
+T686	Concept 9173 9179;9180 9185	cryoEM grids
+T687	Reference 9102 9107	these
+R605	is-a Arg1:T683 Arg2:T682
+R606	subject Arg1:T684 Arg2:T683
+R607	in-place Arg1:T684 Arg2:T685
+R608	has-property Arg1:T686 Arg2:T685
+T688	Concept 9277 9284	viruses
+T689	Concept 9249 9258	influenza
+T690	Concept 9446 9454	patients
+T691	Concept 9362 9370	SARS-CoV
+T692	Concept 9362 9366	SARS
+T693	Concept 9464 9473	treatment
+T694	Concept 9212 9218	common
+T695	Concept 9219 9230	respiratory
+T696	Concept 9231 9239	pathogen
+T697	Concept 9263 9276	parainfluenza
+T698	Concept 9286 9289	RSV
+T699	Concept 9291 9294	ADV
+T700	Concept 9296 9298	MP
+T701	Concept 9303 9305	CP
+T702	Concept 9314 9322	previous
+T703	Concept 9323 9331	emerging
+T704	Concept 9332 9337	novel
+T705	Concept 9338 9351	coronaviruses
+T706	Concept 9375 9383	MERS-CoV
+T707	Action 9389 9397	isolated
+T708	Concept 9403 9407	body
+T709	Concept 9408 9414	fluids
+T710	Concept 9419 9429	secretions
+T711	Action 9437 9445	infected
+T712	Predicate 9456 9463	related
+T713	Concept 9478 9488	management
+T714	Action 9505 9516	implemented
+T715	Concept 9524 9529;9530 9535	first place
+T716	Concept 9375 9379	MERS
+R609	is-a Arg1:T689 Arg2:T688
+R610	is-a Arg1:T689 Arg2:T696
+R611	is-a Arg1:T691 Arg2:T705
+R612	in-context Arg1:T696 Arg2:T694
+R613	in-place Arg1:T696 Arg2:T695
+R614	is-a Arg1:T697 Arg2:T688
+R615	is-a Arg1:T697 Arg2:T696
+R616	is-a Arg1:T698 Arg2:T696
+R617	is-a Arg1:T699 Arg2:T696
+R618	is-a Arg1:T700 Arg2:T696
+R619	is-a Arg1:T701 Arg2:T696
+R620	entails Arg1:T703 Arg2:T702
+R621	has-property Arg1:T705 Arg2:T703
+R622	in-context Arg1:T705 Arg2:T704
+R623	is-a Arg1:T706 Arg2:T705
+R624	target Arg1:T707 Arg2:T696
+R625	target Arg1:T707 Arg2:T705
+R626	in-place Arg1:T707 Arg2:T709
+R627	in-place Arg1:T707 Arg2:T710
+R628	entails Arg1:T707 Arg2:T714
+R629	has-part Arg1:T708 Arg2:T709
+R630	has-part Arg1:T708 Arg2:T710
+R631	in-place Arg1:T708 Arg2:T711
+R632	in-place Arg1:T709 Arg2:T708
+R633	in-place Arg1:T710 Arg2:T708
+R634	target Arg1:T711 Arg2:T690
+R635	arg Arg1:T712 Arg2:T691
+R636	target Arg1:T714 Arg2:T693
+R637	target Arg1:T714 Arg2:T713
+R638	in-time Arg1:T714 Arg2:T715
+T717	Action 9671 9678	prevent
+T718	Concept 9699 9707	SARS-CoV
+T719	Concept 9699 9703	SARS
+T720	Concept 9550 9561	respiratory
+T721	Action 9734 9741	concern
+T722	Concept 9562 9569	hygiene
+T723	Concept 9570 9578	measures
+T724	Concept 9659 9667	measures
+T725	Concept 9580 9588	facemask
+T726	Concept 9767 9775	facemask
+T727	Concept 9630 9644	cost-effective
+T728	Concept 9649 9658	important
+T729	Action 9683 9695	transmission
+T730	Concept 9699 9709	SARS-CoV-2
+T731	Concept 9635 9644	effective
+R639	in-context Arg1:T722 Arg2:T720
+R640	in-context Arg1:T723 Arg2:T722
+R641	is-a Arg1:T723 Arg2:T723
+R642	is-a Arg1:T723 Arg2:T724
+R643	has-property Arg1:T723 Arg2:T727
+R644	has-property Arg1:T723 Arg2:T728
+R645	causes Arg1:T723 Arg2:T729
+R646	in-context Arg1:T724 Arg2:T722
+R647	is-a Arg1:T724 Arg2:T723
+R648	is-a Arg1:T724 Arg2:T724
+R649	has-property Arg1:T724 Arg2:T727
+R650	has-property Arg1:T724 Arg2:T728
+R651	causes Arg1:T724 Arg2:T729
+R652	is-a Arg1:T725 Arg2:T723
+R653	is-a Arg1:T725 Arg2:T724
+R654	is-a Arg1:T726 Arg2:T723
+R655	is-a Arg1:T726 Arg2:T724
+R656	subject Arg1:T729 Arg2:T730
+T732	Concept 9942 9946	SARS
+T733	Concept 9883 9891	COVID-19
+T734	Concept 9969 9977	COVID-19
+T735	Predicate 9855 9858	que
+T736	Predicate 9908 9911	que
+T737	Reference 9785 9787	Se
+T738	Reference 9862 9864	se
+T739	Reference 9920 9922	se
+T740	Concept 9840 9848	personas
+T741	Action 9793 9805	investigando
+T742	Action 9809 9812	uso
+T743	Concept 9816 9826	donaciones
+T744	Concept 9830 9836	sangre
+T745	Concept 9849 9854	sanas
+T746	Action 9869 9879	recuperado
+T747	Concept 9897 9907	estrategia
+T748	Action 9926 9933	probado
+T749	Concept 9951 9956	primo
+T750	Concept 9957 9965	anterior
+R657	is-a Arg1:T732 Arg2:T749
+R658	in-context Arg1:T740 Arg2:T745
+R659	target Arg1:T741 Arg2:T742
+R660	target Arg1:T742 Arg2:T743
+R661	is-a Arg1:T742 Arg2:T748
+R662	in-context Arg1:T743 Arg2:T744
+R663	in-context Arg1:T744 Arg2:T746
+R664	in-context Arg1:T746 Arg2:T733
+R665	in-context Arg1:T746 Arg2:T734
+R666	subject Arg1:T746 Arg2:T740
+R667	in-context Arg1:T748 Arg2:T732
+R668	target Arg1:T748 Arg2:T747
+R669	in-context Arg1:T749 Arg2:T733
+R670	in-context Arg1:T749 Arg2:T734
+R671	in-context Arg1:T749 Arg2:T750
+T751	Concept 10098 10109	coronavirus
+T752	Concept 10003 10010	Control
+T753	Concept 10148 10160	medicamentos
+T754	Concept 10027 10039	Enfermedades
+T755	Concept 9982 9988;9989 9994;9995 9999;10000 10002;10003 10010;10011 10012;10013 10023;10024 10026;10027 10039	Centro Chino para el Control y Prevención de Enfermedades
+T756	Concept 10041 10045	CCDC
+T757	Action 10050 10059	comenzado
+T758	Action 10062 10073	desarrollar
+T759	Concept 10074 10081	vacunas
+T760	Concept 10092 10097	nuevo
+T761	Action 10117 10125	probando
+T762	Concept 10129 10140	efectividad
+T763	Concept 10180 10188	neumonía
+T764	Concept 9989 9994	Chino
+R672	in-context Arg1:T751 Arg2:T760
+R673	in-context Arg1:T753 Arg2:T763
+*	same-as T755 T756
+R674	subject Arg1:T757 Arg2:T755
+R675	target Arg1:T757 Arg2:T758
+R676	in-context Arg1:T758 Arg2:T751
+R677	target Arg1:T758 Arg2:T759
+R678	in-context Arg1:T761 Arg2:T753
+R679	subject Arg1:T761 Arg2:T755
+R680	target Arg1:T761 Arg2:T762
+T765	Concept 10277 10285	COVID-19
+T766	Concept 10194 10198	need
+T767	Concept 10217 10222	fetal
+T768	Action 10223 10233	monitoring
+T769	Concept 10244 10250;10251 10261	serial ultrasound
+T770	Concept 10266 10271	women
+R681	is-a Arg1:T767 Arg2:T766
+R682	target Arg1:T768 Arg2:T767
+R683	target Arg1:T768 Arg2:T770
+R684	part-of Arg1:T769 Arg2:T768
+R685	in-context Arg1:T770 Arg2:T765
+T771	Reference 10430 10434	both
+T772	Concept 10354 10355;10356 10364	S proteins
+T773	Concept 10415 10423	SARS-CoV
+T774	Concept 10415 10419	SARS
+T775	Concept 10374 10381	similar
+T776	Concept 10382 10389;10390 10397	folding pattern
+T777	Concept 10415 10423;10424 10425	SARS-CoV S
+T778	Concept 10436 10438	S1
+T779	Concept 10443 10445	S2
+T780	Concept 10446 10453	domains
+T781	Concept 10463 10470	uniform
+T782	Concept 10471 10483	organization
+R686	has-part Arg1:T772 Arg2:T776
+R687	in-context Arg1:T775 Arg2:T772
+R688	in-context Arg1:T775 Arg2:T777
+R689	has-property Arg1:T776 Arg2:T775
+R690	has-part Arg1:T777 Arg2:T776
+R691	is-a Arg1:T778 Arg2:T780
+R692	has-property Arg1:T778 Arg2:T782
+R693	is-a Arg1:T779 Arg2:T780
+R694	has-property Arg1:T779 Arg2:T782
+R695	has-property Arg1:T782 Arg2:T781
+T783	Concept 10535 10543	SARS-CoV
+T784	Concept 10521 10530	2019-nCoV
+T785	Concept 10665 10671	genome
+T786	Concept 10535 10539	SARS
+T787	Predicate 10604 10611	related
+T788	Concept 10567 10579	Sarbecovirus
+T789	Concept 10625 10633;10634 10642	sequence identity
+T790	Concept 10659 10671;10672 10677;10678 10679	whole-genome level 5
+R696	is-a Arg1:T783 Arg2:T788
+R697	is-a Arg1:T784 Arg2:T788
+R698	in-context Arg1:T785 Arg2:T784
+R699	arg Arg1:T787 Arg2:T783
+R700	arg Arg1:T787 Arg2:T784
+R701	has-property Arg1:T787 Arg2:T789
+R702	in-context Arg1:T789 Arg2:T790
+T791	Predicate 10693 10696	más
+T792	Concept 10687 10692	casos
+T793	Concept 10697 10703	graves
+T794	Concept 10708 10722	diverticulitis
+T795	Concept 10736 10744	sangrado
+T796	Concept 10746 10755	desgarres
+T797	Concept 10758 10771	obstrucciones
+R703	in-context Arg1:T791 Arg2:T792
+R704	in-context Arg1:T794 Arg2:T793
+R705	causes Arg1:T794 Arg2:T795
+R706	causes Arg1:T794 Arg2:T796
+R707	causes Arg1:T794 Arg2:T797
+T798	Predicate 10888 10890	10
+T799	Predicate 10939 10941	10
+T800	Reference 10812 10814	se
+T801	Concept 10800 10805	mundo
+T802	Concept 10773 10778	Corea
+T803	Predicate 10785 10790	único
+T804	Concept 10791 10795	país
+T805	Action 10815 10825	realizaron
+T806	Concept 10826 10834	análisis
+T807	Concept 10835 10847	sistemáticos
+T808	Concept 10851 10858	grandes
+T809	Concept 10859 10868	conjuntos
+T810	Concept 10872 10881	población
+T811	Concept 10888 10890;10891 10894	10 000
+T812	Predicate 10895 10897	al
+T813	Concept 10898 10901	día
+T814	Concept 10907 10910;10911 10914	210 000
+T815	Action 10915 10929	contabilizados
+T816	Predicate 10930 10935	hasta
+T817	Concept 10939 10941;10942 10944;10945 10950	10 de marzo
+R708	has-property Arg1:T802 Arg2:T803
+R709	domain Arg1:T803 Arg2:T804
+R710	subject Arg1:T805 Arg2:T802
+R711	in-context Arg1:T805 Arg2:T806
+R712	target Arg1:T805 Arg2:T809
+R713	in-context Arg1:T805 Arg2:T811
+R714	in-context Arg1:T806 Arg2:T807
+R715	in-context Arg1:T809 Arg2:T808
+R716	in-context Arg1:T809 Arg2:T810
+R717	in-context Arg1:T811 Arg2:T812
+R718	arg Arg1:T812 Arg2:T813
+R719	target Arg1:T815 Arg2:T809
+R720	in-context Arg1:T815 Arg2:T814
+R721	in-time Arg1:T815 Arg2:T816
+R722	arg Arg1:T816 Arg2:T817
+T818	Concept 11070 11078	SARS-CoV
+T819	Concept 10960 10969	2019-nCoV
+T820	Concept 10994 11003	2019-nCoV
+T821	Concept 11070 11074	SARS
+T822	Concept 10970 10972;10973 10978	3D model
+T823	Concept 11015 11022	similar
+T824	Concept 11030 11046;11047 11053	receptor-binding domain
+T825	Concept 11055 11058	RBD
+T826	Predicate 11047 11053	domain
+T827	Predicate 11060 11066	domain
+T828	Concept 11030 11038	receptor
+T829	Concept 10973 10978	model
+T830	Action 11039 11046	binding
+R723	entails Arg1:T822 Arg2:T819
+R724	entails Arg1:T822 Arg2:T820
+R725	in-context Arg1:T824 Arg2:T818
+*	same-as T824 T825
+T831	Concept 11082 11092	enfermedad
+T832	Concept 11082 11092;11093 11105;11106 11113	enfermedad inflamatoria pélvica
+T833	Concept 11115 11118	EIP
+T834	Concept 11127 11136	infección
+T835	Action 11139 11150	inflamación
+T836	Concept 11155 11160	útero
+T837	Concept 11162 11169	ovarios
+T838	Predicate 11172 11177	otros
+T839	Concept 11178 11185;11186 11199;11200 11209	órganos reproductivos femeninos
+*	same-as T832 T833
+R726	is-a Arg1:T832 Arg2:T835
+R727	target Arg1:T835 Arg2:T836
+R728	target Arg1:T835 Arg2:T837
+R729	target Arg1:T835 Arg2:T838
+R730	domain Arg1:T838 Arg2:T839
+T840	Concept 11237 11242	virus
+T841	Predicate 11219 11222	que
+T842	Reference 11211 11213	Se
+T843	Concept 11226 11232	fuente
+T844	Concept 11246 11252	animal
+R731	in-context Arg1:T843 Arg2:T840
+R732	has-property Arg1:T843 Arg2:T844
+T845	Concept 11263 11268	virus
+T846	Concept 11254 11262	SARS-CoV
+T847	Concept 11254 11258	SARS
+T848	Action 11322 11328	depend
+T849	Concept 11263 11273	virus-like
+T850	Concept 11274 11283	particles
+T851	Concept 11285 11289	VLPs
+T852	Action 11291 11300	formation
+T853	Concept 11347 11348;11349 11357	E proteins
+T854	Concept 11367 11368;11369 11377	N proteins
+R733	is-a Arg1:T846 Arg2:T845
+R734	has-part Arg1:T846 Arg2:T850
+R735	subject Arg1:T848 Arg2:T846
+R736	subject Arg1:T848 Arg2:T852
+R737	in-context Arg1:T848 Arg2:T853
+R738	in-context Arg1:T848 Arg2:T854
+R739	has-property Arg1:T850 Arg2:T849
+*	same-as T851 T850
+R740	target Arg1:T852 Arg2:T850
+T855	Concept 11396 11405	influenza
+T856	Concept 11406 11410	data
+T857	Action 11435 11443	affected
+T858	Concept 11451 11458	smaller
+T859	Concept 11459 11468;11469 11476	look-back windows
+R741	in-context Arg1:T856 Arg2:T855
+R742	target Arg1:T857 Arg2:T856
+R743	subject Arg1:T857 Arg2:T859
+R744	in-context Arg1:T859 Arg2:T858
+T860	Concept 11580 11588	SARS-CoV
+T861	Concept 11580 11584	SARS
+T862	Concept 11580 11590	SARS-CoV-2
+T863	Predicate 11540 11543	que
+T864	Concept 11480 11486	hombre
+T865	Concept 11490 11492;11493 11497	70 años
+T866	Concept 11504 11510	cantón
+T867	Concept 11514 11519	habla
+T868	Concept 11520 11528	italiana
+T869	Concept 11532 11538	Ticino
+T870	Action 11544 11550	limita
+T871	Concept 11555 11561	Italia
+T872	Action 11563 11566	dio
+T873	Concept 11567 11575	positivo
+T874	Predicate 11576 11579	por
+R745	in-context Arg1:T864 Arg2:T865
+R746	in-place Arg1:T864 Arg2:T870
+R747	in-context Arg1:T866 Arg2:T867
+R748	in-place Arg1:T866 Arg2:T869
+R749	in-context Arg1:T867 Arg2:T868
+R750	subject Arg1:T870 Arg2:T866
+R751	target Arg1:T870 Arg2:T871
+R752	in-context Arg1:T872 Arg2:T862
+R753	subject Arg1:T872 Arg2:T864
+R754	target Arg1:T872 Arg2:T873
+T875	Predicate 11663 11666	que
+T876	Reference 11606 11608	se
+T877	Concept 11598 11605	laringe
+T878	Concept 11624 11631;11632 11639	cuerdas vocales
+T879	Concept 11641 11644	dos
+T880	Concept 11645 11651;11652 11662	bandas musculares
+T881	Action 11667 11673	vibran
+T882	Action 11679 11685	emitir
+T883	Concept 11690 11697	sonidos
+R755	part-of Arg1:T878 Arg2:T877
+R756	is-a Arg1:T878 Arg2:T881
+R757	causes Arg1:T881 Arg2:T882
+R758	target Arg1:T882 Arg2:T883
+T884	Concept 11912 11916	SARS
+T885	Concept 11887 11894	control
+T886	Predicate 11734 11737	que
+T887	Reference 11838 11840	se
+T888	Concept 11768 11771	dos
+T889	Concept 11722 11727	brote
+T890	Predicate 11728 11733	hasta
+T891	Action 11710 11718	ocultado
+T892	Action 11738 11745	alcanzó
+T893	Concept 11746 11752	escala
+T894	Concept 11753 11766	internacional
+T895	Concept 11772 11783	importantes
+T896	Concept 11784 11796	funcionarios
+T897	Concept 11797 11803	chinos
+T898	Action 11811 11822	destituidos
+T899	Concept 11829 11837	sistemas
+T900	Action 11847 11856	adaptando
+T901	Action 11862 11869	mejorar
+T902	Concept 11873 11884	divulgación
+T903	Concept 11901 11907	crisis
+R759	arg Arg1:T890 Arg2:T892
+R760	target Arg1:T891 Arg2:T889
+R761	in-time Arg1:T891 Arg2:T890
+R762	subject Arg1:T892 Arg2:T889
+R763	target Arg1:T892 Arg2:T893
+R764	in-context Arg1:T893 Arg2:T894
+R765	in-context Arg1:T896 Arg2:T888
+R766	in-context Arg1:T896 Arg2:T895
+R767	in-context Arg1:T896 Arg2:T897
+R768	in-context Arg1:T898 Arg2:T891
+R769	target Arg1:T898 Arg2:T896
+R770	target Arg1:T900 Arg2:T899
+R771	in-context Arg1:T900 Arg2:T901
+R772	target Arg1:T901 Arg2:T885
+R773	target Arg1:T901 Arg2:T902
+R774	in-context Arg1:T901 Arg2:T903
+R775	in-context Arg1:T903 Arg2:T884
+T904	Concept 11952 11957	CD147
+T905	Concept 12036 12041	CD147
+T906	Action 11985 11997	facilitating
+T907	Concept 11998 12006	SARS-CoV
+T908	Concept 12133 12141	SARS-CoV
+T909	Action 12007 12015	invasion
+T910	Concept 12020 12024;12025 12030	host cells
+T911	Concept 12036 12054;12055 12064	CD147-antagonistic peptide-9
+T912	Concept 12071 12075	high
+T913	Concept 12076 12083;12084 12088	binding rate
+T914	Concept 12092 12098;12099 12104	HEK293 cells
+T915	Action 12112 12122	inhibitory
+T916	Concept 11998 12002	SARS
+T917	Concept 12133 12137	SARS
+T918	Concept 11922 11930	previous
+T919	Predicate 11977 11981	role
+T920	Action 12076 12083	binding
+R776	subject Arg1:T906 Arg2:T904
+R777	subject Arg1:T906 Arg2:T905
+R778	target Arg1:T906 Arg2:T909
+R779	subject Arg1:T909 Arg2:T907
+R780	subject Arg1:T909 Arg2:T908
+R781	target Arg1:T909 Arg2:T910
+R782	has-property Arg1:T911 Arg2:T913
+R783	has-property Arg1:T911 Arg2:T915
+R784	has-property Arg1:T913 Arg2:T912
+R785	in-context Arg1:T913 Arg2:T914
+R786	target Arg1:T915 Arg2:T907
+R787	target Arg1:T915 Arg2:T908
+T921	Predicate 12282 12285	que
+T922	Concept 12274 12281	persona
+T923	Concept 12145 12150;12151 12163	shock anafiláctico
+T924	Concept 12181 12189;12190 12198	reacción alérgica
+T925	Concept 12199 12204	grave
+T926	Action 12247 12255	picadura
+T927	Concept 12259 12266	insecto
+T928	Action 12190 12198	alérgica
+T929	Action 12289 12297	alérgica
+T930	Reference 12300 12302	él
+T931	Predicate 12173 12176	por
+T932	Predicate 12226 12229	por
+T933	Predicate 12239 12242	por
+R788	entails Arg1:T924 Arg2:T923
+R789	in-context Arg1:T924 Arg2:T925
+R790	causes Arg1:T926 Arg2:T924
+R791	subject Arg1:T926 Arg2:T927
+R792	target Arg1:T926 Arg2:T928
+R793	target Arg1:T926 Arg2:T929
+R794	subject Arg1:T928 Arg2:T922
+R795	target Arg1:T928 Arg2:T930
+R796	subject Arg1:T929 Arg2:T922
+R797	target Arg1:T929 Arg2:T930
+R798	is-a Arg1:T930 Arg2:T927
+T934	Concept 12442 12447	virus
+T935	Concept 12386 12394	SARS-CoV
+T936	Concept 12386 12390	SARS
+T937	Reference 12314 12318	same
+T938	Concept 12386 12396	SARS-CoV-2
+T939	Concept 12377 12385	specific
+T940	Concept 12319 12331	mathematical
+T941	Concept 12332 12337	model
+T942	Action 12358 12367	estimated
+T943	Concept 12386 12405	SARS-CoV-2-designed
+T944	Concept 12406 12411	panel
+T945	Action 12416 12422	detect
+T946	Predicate 12423 12427	1.15
+T947	Concept 12428 12434	copies
+T948	Concept 12455 12466	probability
+T949	Predicate 12425 12427	15
+R799	is-a Arg1:T935 Arg2:T934
+R800	has-property Arg1:T941 Arg2:T940
+R801	subject Arg1:T942 Arg2:T941
+R802	target Arg1:T942 Arg2:T945
+R803	has-property Arg1:T944 Arg2:T943
+R804	subject Arg1:T945 Arg2:T944
+R805	target Arg1:T945 Arg2:T947
+R806	domain Arg1:T946 Arg2:T947
+R807	in-context Arg1:T947 Arg2:T934
+T950	Concept 12478 12483	virus
+T951	Concept 12471 12477	killer
+T952	Concept 12489 12498;12499 12502	satellite RNA
+T953	Concept 12506 12509	L-A
+T954	Concept 12542 12545	L-A
+T955	Concept 12542 12545;12546 12554	L-A proteins
+T956	Action 12559 12570	replication
+T957	Concept 12499 12502	RNA
+R808	in-context Arg1:T950 Arg2:T951
+R809	is-a Arg1:T950 Arg2:T952
+R810	in-context Arg1:T952 Arg2:T953
+R811	in-context Arg1:T952 Arg2:T954
+R812	target Arg1:T956 Arg2:T950
+R813	entails Arg1:T956 Arg2:T955
+T958	Concept 12657 12673	transmissibility
+T959	Concept 12677 12685	SARS-CoV
+T960	Concept 12677 12681	SARS
+T961	Concept 12677 12687	SARS-CoV-2
+T962	Concept 12588 12595	disease
+T963	Concept 12606 12614	COVID-19
+T964	Concept 12620 12628	duration
+T965	Concept 12691 12703;12704 12712	asymptomatic carriers
+T966	Concept 12720 12727	unknown
+T967	Concept 12632 12637	viral
+R814	has-property Arg1:T958 Arg2:T966
+*	same-as T961 T963
+R815	has-property Arg1:T963 Arg2:T958
+R816	has-property Arg1:T963 Arg2:T964
+R817	in-context Arg1:T963 Arg2:T965
+R818	has-property Arg1:T964 Arg2:T966
+T968	Concept 12732 12744	confirmation
+T969	Concept 12745 12750	delay
+T970	Action 12760 12766	affect
+T971	Action 12771 12780	infecting
+T972	Concept 12781 12788	process
+T973	Action 12810 12816	hinder
+T974	Action 12820 12830	inspecting
+T975	Concept 12835 12839	real
+T976	Concept 12840 12846	number
+T977	Concept 12850 12859	confirmed
+T978	Concept 12860 12865	cases
+R819	in-context Arg1:T969 Arg2:T968
+R820	entails Arg1:T969 Arg2:T973
+R821	subject Arg1:T970 Arg2:T969
+R822	target Arg1:T970 Arg2:T972
+R823	in-context Arg1:T972 Arg2:T971
+R824	target Arg1:T973 Arg2:T974
+R825	in-context Arg1:T978 Arg2:T977
+T979	Concept 12926 12934	SARS-CoV
+T980	Concept 12926 12930	SARS
+T981	Action 12944 12955	transmitted
+T982	Concept 12926 12936	SARS-CoV-2
+T983	Concept 12959 12966;12967 12970	vaginal sex
+R826	target Arg1:T981 Arg2:T982
+R827	in-context Arg1:T981 Arg2:T983
+T984	Concept 13136 13145	influenza
+T985	Concept 13092 13100	patients
+T986	Concept 13106 13114	SARS-CoV
+T987	Concept 13106 13110	SARS
+T988	Concept 13019 13031	convalescent
+T989	Concept 13032 13038	plasma
+T990	Concept 13039 13048	treatment
+T991	Action 13049 13056	reduced
+T992	Concept 13061 13069	hospital
+T993	Action 13070 13074	stay
+T994	Action 13079 13088	mortality
+T995	Action 13115 13124	infection
+T996	Concept 13129 13135	severe
+T997	Concept 13136 13145;13146 13147	influenza A
+T998	Concept 13149 13153	H1N1
+R828	in-context Arg1:T985 Arg2:T995
+R829	in-context Arg1:T985 Arg2:T997
+R830	in-context Arg1:T989 Arg2:T988
+R831	target Arg1:T991 Arg2:T993
+R832	target Arg1:T991 Arg2:T994
+R833	subject Arg1:T993 Arg2:T985
+R834	in-place Arg1:T993 Arg2:T992
+R835	target Arg1:T994 Arg2:T985
+R836	subject Arg1:T995 Arg2:T986
+R837	in-context Arg1:T997 Arg2:T996
+*	same-as T997 T998
+T999	Concept 13168 13180	concentrated
+T1000	Concept 13181 13186	sugar
+T1001	Concept 13326 13331	sugar
+T1002	Concept 13199 13203	rare
+T1003	Concept 13207 13211	wild
+T1004	Concept 13212 13218	niches
+T1005	Action 13223 13234	competition
+T1006	Concept 13245 13251	fierce
+T1007	Predicate 13258 13272	concentrations
+T1008	Concept 13273 13281	unlikely
+T1009	Action 13291 13297	exceed
+T1010	Concept 13307 13316	threshold
+T1011	Action 13332 13344	fermentation
+R838	in-context Arg1:T1000 Arg2:T999
+R839	has-property Arg1:T1000 Arg2:T1002
+R840	in-place Arg1:T1000 Arg2:T1004
+R841	in-context Arg1:T1001 Arg2:T999
+R842	has-property Arg1:T1001 Arg2:T1002
+R843	in-place Arg1:T1001 Arg2:T1004
+R844	in-context Arg1:T1004 Arg2:T1003
+R845	in-context Arg1:T1005 Arg2:T1000
+R846	in-context Arg1:T1005 Arg2:T1001
+R847	in-place Arg1:T1005 Arg2:T1004
+R848	has-property Arg1:T1005 Arg2:T1006
+R849	domain Arg1:T1007 Arg2:T1000
+R850	domain Arg1:T1007 Arg2:T1001
+R851	subject Arg1:T1009 Arg2:T1007
+R852	has-property Arg1:T1009 Arg2:T1008
+R853	target Arg1:T1011 Arg2:T1000
+R854	target Arg1:T1011 Arg2:T1001
+R855	entails Arg1:T1011 Arg2:T1009
+T1012	Concept 13382 13390	SARS-CoV
+T1013	Concept 13382 13386	SARS
+T1014	Predicate 13448 13454	domain
+T1015	Concept 13358 13368	co-crystal
+T1016	Concept 13369 13378	structure
+T1017	Concept 13382 13390;13391 13395	SARS-CoV NSP7
+T1018	Action 13405 13417	demonstrated
+T1019	Concept 13427 13431;13432 13442	NSP8 C-terminal
+T1020	Concept 13443 13447;13448 13454	head domain
+T1021	Action 13455 13460	folds
+T1022	Predicate 13461 13467	around
+T1023	Concept 13391 13395	NSP7
+T1024	Concept 13472 13476	NSP7
+T1025	Concept 13477 13484	helical
+T1026	Concept 13485 13491	bundle
+R856	has-property Arg1:T1016 Arg2:T1015
+R857	in-context Arg1:T1016 Arg2:T1017
+R858	subject Arg1:T1018 Arg2:T1016
+R859	target Arg1:T1018 Arg2:T1021
+R860	in-context Arg1:T1020 Arg2:T1019
+R861	subject Arg1:T1021 Arg2:T1020
+R862	in-place Arg1:T1021 Arg2:T1022
+R863	arg Arg1:T1022 Arg2:T1026
+R864	in-place Arg1:T1026 Arg2:T1023
+R865	in-place Arg1:T1026 Arg2:T1024
+R866	has-property Arg1:T1026 Arg2:T1025
+T1027	Concept 13551 13559	SARS-CoV
+T1028	Concept 13667 13671	high
+T1029	Concept 13644 13653	2019-nCoV
+T1030	Concept 13551 13555	SARS
+T1031	Predicate 13540 13547	related
+T1032	Concept 13560 13568	epitopes
+T1033	Concept 13706 13711	human
+T1034	Concept 13633 13640	regions
+T1035	Concept 13624 13632	specific
+T1036	Action 13692 13702	recognized
+T1037	Concept 13712 13718	immune
+T1038	Concept 13719 13728	responses
+R867	arg Arg1:T1031 Arg2:T1027
+R868	arg Arg1:T1031 Arg2:T1029
+R869	in-context Arg1:T1034 Arg2:T1029
+R870	has-property Arg1:T1034 Arg2:T1035
+R871	target Arg1:T1036 Arg2:T1034
+R872	subject Arg1:T1036 Arg2:T1038
+R873	in-context Arg1:T1037 Arg2:T1033
+R874	in-context Arg1:T1038 Arg2:T1037
+T1039	Reference 13729 13734	These
+T1040	Concept 13746 13751	small
+T1041	Concept 13752 13759	changes
+T1042	Concept 13767 13774;13775 13785	subunit structures
+T1043	Concept 13801 13807	larger
+T1044	Concept 13808 13814	shifts
+T1045	Concept 13822 13829	hexamer
+R875	is-a Arg1:T1039 Arg2:T1041
+R876	entails Arg1:T1039 Arg2:T1044
+R877	has-property Arg1:T1041 Arg2:T1040
+R878	in-place Arg1:T1041 Arg2:T1042
+R879	has-property Arg1:T1044 Arg2:T1043
+R880	in-place Arg1:T1044 Arg2:T1045
+T1046	Predicate 13898 13901	que
+T1047	Concept 13833 13843	enfermedad
+T1048	Concept 13850 13857	arteria
+T1049	Concept 13858 13866	carótida
+T1050	Concept 13883 13891	síntomas
+T1051	Action 13905 13919	estrechamiento
+T1052	Action 13922 13929	bloqueo
+T1053	Concept 13933 13939	severo
+T1054	Predicate 13892 13897	hasta
+R881	in-context Arg1:T1047 Arg2:T1049
+R882	causes Arg1:T1047 Arg2:T1050
+R883	is-a Arg1:T1049 Arg2:T1048
+R884	in-time Arg1:T1050 Arg2:T1051
+R885	in-time Arg1:T1050 Arg2:T1052
+R886	has-property Arg1:T1051 Arg2:T1053
+*	same-as T1052 T1051
+R887	has-property Arg1:T1052 Arg2:T1053
+T1055	Action 14043 14052	spreading
+T1056	Concept 13956 13964	SARS-CoV
+T1057	Concept 13975 13984	2019-nCoV
+T1058	Concept 13956 13960	SARS
+T1059	Action 13941 13950	Comparing
+T1060	Concept 13969 13973	MERS
+T1061	Action 14010 14021	transmitted
+T1062	Concept 14027 14032	human
+T1063	Concept 14036 14041	human
+T1064	Concept 14056 14064	multiple
+T1065	Concept 14065 14074	countries
+T1066	Concept 14079 14086	regions
+T1067	Concept 14106 14109	WHO
+T1068	Action 14110 14121	declaration
+T1069	Concept 14127 14133	Public
+T1070	Concept 14134 14140	Health
+T1071	Concept 14141 14150	Emergency
+T1072	Concept 14154 14167	International
+T1073	Action 14168 14175	Concern
+R888	subject Arg1:T1055 Arg2:T1057
+R889	in-place Arg1:T1055 Arg2:T1065
+R890	in-place Arg1:T1055 Arg2:T1066
+R891	causes Arg1:T1057 Arg2:T1068
+R892	target Arg1:T1059 Arg2:T1056
+R893	target Arg1:T1059 Arg2:T1060
+R894	target Arg1:T1061 Arg2:T1057
+R895	in-place Arg1:T1061 Arg2:T1062
+R896	in-place Arg1:T1061 Arg2:T1063
+R897	in-context Arg1:T1065 Arg2:T1064
+R898	in-context Arg1:T1066 Arg2:T1057
+R899	in-context Arg1:T1066 Arg2:T1064
+R900	subject Arg1:T1068 Arg2:T1067
+R901	target Arg1:T1068 Arg2:T1071
+R902	in-context Arg1:T1070 Arg2:T1069
+R903	in-context Arg1:T1071 Arg2:T1070
+R904	has-property Arg1:T1071 Arg2:T1073
+R905	in-place Arg1:T1073 Arg2:T1072
+T1074	Concept 14199 14207	COVID-19
+T1075	Reference 14176 14178	Se
+T1076	Concept 14244 14256	enfermedades
+T1077	Concept 14240 14243	dos
+T1078	Action 14182 14191	utilizado
+T1079	Concept 14220 14229	similitud
+T1080	Concept 14240 14243;14244 14256	dos enfermedades
+R906	in-context Arg1:T1078 Arg2:T1074
+R907	causes Arg1:T1079 Arg2:T1078
+R908	in-context Arg1:T1079 Arg2:T1080
+T1081	Concept 14309 14317	SARS-CoV
+T1082	Concept 14322 14331	2019-nCoV
+T1083	Concept 14309 14313	SARS
+T1084	Concept 14262 14270;14271 14279	sequence identity
+T1085	Predicate 14280 14287	between
+T1086	Concept 14292 14295;14296 14305	3CL proteases
+R909	in-context Arg1:T1084 Arg2:T1085
+R910	arg Arg1:T1085 Arg2:T1086
+R911	in-context Arg1:T1086 Arg2:T1081
+R912	in-context Arg1:T1086 Arg2:T1082
