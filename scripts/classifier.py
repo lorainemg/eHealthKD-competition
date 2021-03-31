@@ -1,16 +1,16 @@
 import argparse
-import re
 from typing import List
-import warnings
 from pathlib import Path
 
 from anntools import Collection, Keyphrase, Relation
+from ner_clsf import NERClassifier
+from re_clsf import REClassifier
 
 class Classifier:
     "Classifier for the main task"
     def __init__(self):
-        self.model1 = None
-        self.model2 = None
+        self.ner_classifier = NERClassifier()
+        self.re_classifier = REClassifier()
 
     # scenarios = {
     #     1: ("scenario1-main", True, True),
@@ -22,25 +22,9 @@ class Classifier:
         collection = Collection().load_dir(path)
 
         print(f"Loaded {len(collection)} sentences for fitting.")
+        self.ner_classifier.fit(collection)
 
-        self.model = keyphrases, relations = {}, {}
-
-        for sentence in collection.sentences:
-            for keyphrase in sentence.keyphrases:
-                text = keyphrase.text.lower()
-                keyphrases[text] = keyphrase.label
-
-        for sentence in collection.sentences:
-            for relation in sentence.relations:
-                origin = relation.from_phrase
-                origin_text = origin.text.lower()
-                destination = relation.to_phrase
-                destination_text = destination.text.lower()
-
-                relations[
-                    origin_text, origin.label, destination_text, destination.label
-                ] = relation.label
-
+        self.re_classifier.fit(collection)
         print(f"Training completed: Stored {len(keyphrases)} keyphrases and {len(relations)} relation pairs.")
 
 
