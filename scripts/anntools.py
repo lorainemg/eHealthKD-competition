@@ -329,6 +329,11 @@ class Keyphrase:
         self.spans = spans
         self.attributes: List[Attribute] = []
 
+    @property
+    def tokens(self):
+        for i, j in self.spans:
+            yield self.sentence.text[i:j]
+            
     def split(self):
         if len(self.spans) > 1:
             raise TypeError("Cannot split a keyphrase with multiple spans")
@@ -458,6 +463,7 @@ class Sentence:
         self.text = text
         self.keyphrases: List[Keyphrase] = []
         self.relations: List[Relation] = []
+        self.tokens = text.split()
 
     def clone(self, shallow=False) -> "Sentence":
         s = Sentence(self.text)
