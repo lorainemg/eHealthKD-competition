@@ -1,13 +1,15 @@
-import argparse
 from typing import List
 from pathlib import Path
 
-from anntools import Collection, Keyphrase, Relation
+from anntools import Collection
 from ner_clsf import NERClassifier
 from re_clsf import REClassifier
 
 class Classifier:
-    "Classifier for the main task"
+    '''
+    Classifier for the main task. 
+    It wraps the name entity classifier and the relation extractor classifier
+    '''
     def __init__(self):
         self.ner_classifier = NERClassifier()
         self.re_classifier = REClassifier()
@@ -19,16 +21,19 @@ class Classifier:
     # }
 
     def fit(self, path: Path):
+        'Does all the process of training in the classifiers'
         collection = Collection().load_dir(path)
 
         print(f"Loaded {len(collection)} sentences for fitting.")
-        self.ner_classifier.fit(collection)
+        self.ner_classifier.train(collection)
 
-        self.re_classifier.fit(collection)
-        print(f"Training completed: Stored {len(keyphrases)} keyphrases and {len(relations)} relation pairs.")
+        self.re_classifier.train(collection)
+        # print(f"Training completed: Stored {len(keyphrases)} keyphrases and {len(relations)} relation pairs.")
 
 
     def eval(self, path: Path, scenarios: List[int], submit: Path):
+        'Function that evals according to the baseline classifier'
+        # Its not changed 
         for id in scenarios:
             folder, taskA, taskB = self.scenarios[id]
 
@@ -44,6 +49,7 @@ class Classifier:
 
 
     def run(self, collection, taskA, taskB):
+        "Its suppossed to run the test example"
         # gold_keyphrases, gold_relations = self.model
         collection = collection.clone()
 

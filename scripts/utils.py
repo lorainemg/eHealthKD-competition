@@ -2,7 +2,7 @@ from typing import List
 from anntools import Keyphrase
 
 
-def find_keyphrase_by_span(i:int, j:int, keyphrases:List[Keyphrase], sentence:str):
+def find_keyphrase_by_span(i:int, j:int, keyphrases:List[Keyphrase], sentence:str, nlp):
     '''
     Returns the keyphrase id and the tag of a keyphrase based on the indices that a 
     token occupies in a given sentence

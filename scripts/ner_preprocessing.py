@@ -3,8 +3,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import spacy
 import networkx as nx
-from typing import List
-from anntools import Keyphrase
+from anntools import Sentence
 from utils import find_keyphrase_by_span
 
 
@@ -64,7 +63,7 @@ def get_features(tokens):
 #     return 'O'
   
 
-def get_labels(tokens, sentence):
+def get_labels(tokens, sentence:Sentence):
     '''
     Given a list of tokens and the sentences containing them returns the labels of those tokens.
     They will be used for trainig in the first task (Name Entity Recognition)
@@ -77,19 +76,17 @@ def get_labels(tokens, sentence):
         n = len(token.text)
         i = idx + n 
         # instances[(idx, idx + n)] = classify_as_keyphrase(token.text, sentence.keyphrases, idx)
-        instances[(idx, idx + n)], _ = find_keyphrase_by_span(idx, idx+n, sentence.keyphrases, sentence.text)
+        instances[(idx, idx + n)], _ = find_keyphrase_by_span(idx, idx+n, sentence.keyphrases, sentence.text, nlp)
     return instances.values()
 
 
-def get_instances(sentence):
+def get_instances(sentence:Sentence):
     """
-    Makes all the analysis of the sentence according to spacy
+    Makes all the analysis of the sentence according to spacy.
+    Returns the features and the labels correspinding to those features in the sentence.    
     """
+    # The tokens and its features are extracted with spacy
     doc = nlp(sentence.text)
     features = get_features(doc)
     labels = get_labels(doc, sentence)
     return features, list(labels)
-
-if __name__ == "__main__":
-    f =  spacy_features("Hola esto es una prueba")
-    print(f)
