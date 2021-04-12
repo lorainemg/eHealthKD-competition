@@ -82,12 +82,15 @@ def get_labels(sentence:Sentence, doc):
     return labels
 
 
-def get_instances(sentence:Sentence):
+def get_instances(sentence:Sentence, labels=True):
     """
     Makes all the analysis of the sentence according to spacy preprocessing.
     Returns the features and the labels correspinding to those features in the sentence.
     """
     doc = nlp(sentence.text)
     features = get_features(sentence, doc)
-    labels = get_labels(sentence, doc)
-    return features, labels
+    if labels:
+        labels = get_labels(sentence, doc)
+        return features, labels
+    else:
+        return features

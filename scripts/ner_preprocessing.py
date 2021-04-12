@@ -76,11 +76,11 @@ def get_labels(tokens, sentence:Sentence):
         n = len(token.text)
         i = idx + n 
         # instances[(idx, idx + n)] = classify_as_keyphrase(token.text, sentence.keyphrases, idx)
-        instances[(idx, idx + n)], _ = find_keyphrase_by_span(idx, idx+n, sentence.keyphrases, sentence.text, nlp)
+        _, instances[(idx, idx + n)] = find_keyphrase_by_span(idx, idx+n, sentence.keyphrases, sentence.text, nlp)
     return instances.values()
 
 
-def get_instances(sentence:Sentence):
+def get_instances(sentence:Sentence, labels=True):
     """
     Makes all the analysis of the sentence according to spacy.
     Returns the features and the labels correspinding to those features in the sentence.    
@@ -88,5 +88,8 @@ def get_instances(sentence:Sentence):
     # The tokens and its features are extracted with spacy
     doc = nlp(sentence.text)
     features = get_features(doc)
-    labels = get_labels(doc, sentence)
-    return features, list(labels)
+    if labels:
+        labels = get_labels(doc, sentence)
+        return features, list(labels)
+    else:
+        return features

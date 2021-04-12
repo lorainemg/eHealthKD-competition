@@ -1,36 +1,22 @@
 from anntools import Collection
 from pathlib import Path
 
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
+from base_clsf import BaseClassifier
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, Lambda
-from tensorflow.keras.utils import to_categorical
-from keras.preprocessing.sequence import pad_sequences
-
-from sklearn.feature_extraction import DictVectorizer
-from sklearn.preprocessing import LabelEncoder
 
 from ner_preprocessing import get_instances
-
-import numpy as np
-
+# from utils import DataGeneratorPredict
 # import tensorflow_addons as tfa
 # from tensorflow_addons.layers import CRF
 
 # from keras_crf import CRF
+import numpy as np
+from utils import predict_by_shape
+# from keras_contrib.layers import CRF
 
-from keras_contrib.layers import CRF
-import matplotlib.pyplot as plt
-
-
-class NERClassifier:
+class NERClassifier(BaseClassifier):
     "Classifier for the name entity resolution task"
-    def __init__(self):
-        self.model = None
-
-
     def train(self, collection:Collection):
         '''
         Wrapper function where of the process of training is done
@@ -46,14 +32,14 @@ class NERClassifier:
         Construct the neural network architecture using the keras functional api.
         `mode` is the mode where the lstm are joined in the bidirectional layer, (its not currently being used)
         '''
-        inputs = Input(shape=(self.X_shape[1], self.X_shape[2]))
+        inputs = Input(shape=(None, self.n_features))
 #         outputs = Embedding(input_dim=35179, output_dim=20,
 #                           input_length=self.X_shape[1], mask_zero=True)(inputs)  # 20-dim embedding
-        outputs = Bidirectional(LSTM(units=512, return_sequences=True,
+        outputs = Bidirectional(LSTM(units=32, return_sequences=True,
                                    recurrent_dropout=0.1))(inputs)  # variational biLSTM
-        outputs = Bidirectional(LSTM(units=512, return_sequences=True,
-                           recurrent_dropout=0.2, dropout=0.2))(outputs)
-        outputs = TimeDistributed(Dense(self.y_shape[2], activation="softmax"))(outputs)  # a dense layer as suggested by neuralNer
+        # outputs = Bidirectional(LSTM(units=512, return_sequences=True,
+        #                    recurrent_dropout=0.2, dropout=0.2))(outputs)
+        outputs = TimeDistributed(Dense(self.n_labels, activation="softmax"))(outputs)  # a dense layer as suggested by neuralNer
 #         crf = CRF(8)  # CRF layer
 #         out = crf(outputs)  # output
 
@@ -64,65 +50,20 @@ class NERClassifier:
         # model.compile(loss='binary_crossentropy', optimizer='adam')
         self.model = model
 
-
+    
     def preprocessing(self, features, labels):
         '''
-        Handles the preprocessing step. The features and labels are converted in vectors \
+        Handles the preprocessing step. The features and labels are converted in vectors 
             and their shape is adjusted.
         '''
-        self.max_len = 50
+        X = self.preprocess_features(features, {'dep': 0, 'pos': 0})
+        y = self.preprocess_labels(labels, 'O')
         
-        # DictVectorizer is used to convert the features
-        vectorizer = DictVectorizer()
-        # Padding is done
-        X = self._padding_dicts(features)
-        # first the vectorizer must fit the examples
-        [vectorizer.fit(sent) for sent in X]
-        # after all the examples are transformed
-        X = np.array([vectorizer.transform(sent).todense() for sent in X])
-#         X = X.reshape(1921, 15, X.shape[1])
-        self.X_shape = X.shape
+        # self.X_shape = X.shape   
+        # print(self.X_shape) 
+        # self.y_shape = y.shape
     
-        # Label Encoder is used to transform the labels
-        # Label encoder transforms labels in strings as numbers
-        encoder = LabelEncoder()
-        # As with DictVectorizer, all the labels are fit and the transform
-        # but here that process can be done in parallel 
-        y = [encoder.fit_transform(label) for label in labels]
-        # the padding is done
-        y = pad_sequences(maxlen=self.max_len, sequences=y, padding="post", value=encoder.transform(['O'])[0])
-#         y = y.reshape(1921, 15, y.shape[1])    
-        # the labels are one-hot encoded, i.e, the number are represented in arrays.
-        y = to_categorical(y)
-        self.y_shape = y.shape
         return X, y
-
-    def _padding_dicts(self, X):
-        'Auxiliar function because the keras.pad_sequences does not accept dictionaries'
-        new_X = []
-        for seq in X:
-            new_seq = []
-            for i in range(self.max_len):
-                try:
-                    new_seq.append(seq[i])
-                except:
-                    new_seq.append({'dep': 0, 'pos': 0})
-            new_X.append(new_seq)
-        return new_X
-            
-
-    def fit_model(self, X, y, plot=False):
-        '''
-        The model is fitted. The training begins
-        '''
-        hist = self.model.fit(X, y, batch_size=32, epochs=5,
-                    validation_split=0.2, verbose=1)
-        if plot:
-            plt.style.use("ggplot")
-            plt.figure(figsize=(12, 12))
-            plt.plot(hist["acc"])
-            plt.plot(hist["val_acc"])
-            plt.show() 
 
     def get_sentences(self, collection:Collection):
         '''
@@ -130,22 +71,36 @@ class NERClassifier:
         '''
         features = []
         labels = []
-#         self.max_len = 0
         for sentence in collection:
-            feat, label = get_instances(sentence)
-#             self.max_len = max(self.max_len, len(feat))
+            feat, label = get_instances(sentence, labels=True)
             features.append(feat)
             labels.append(label)
         return features, labels
     
-
+    def get_features(self, collection:Collection):
+        "Giving a collection, the features of its sentences are returned"
+        return [get_instances(sentence, False) for sentence in collection]
+    
+    def test_model(self, collection:Collection):
+        features = self.get_features(collection)
+        X = self.preprocess_features(features, {'dep': 0, 'pos': 0}, train=False)
+        x_shapes = predict_by_shape(X)
+        pred = []
+        for x_items in x_shapes.values():
+            pred.extend(self.model.predict(np.asarray(x_items))) 
+        return self.convert_to_label(pred)
+    
     def run(self, collection: Collection):
         collection = collection.clone()
         # returns a collection with everything annotated
         return collection
 
-
 if __name__ == "__main__":
     collection = Collection().load_dir(Path('2021/ref/training'))
+    dev_set = Collection().load(Path('2021/eval/develop/scenario1-main/output.txt'))
+    # dev_set = Collection().load_dir(Path('2021/eval/develop/scenario1-main'))
     ner_clf = NERClassifier()
     ner_clf.train(collection)
+    ner_clf.save_model('ner')
+    # ner_clf.load_model('ner')
+    print(ner_clf.test_model(dev_set))
