@@ -56,8 +56,8 @@ class NERClassifier(BaseClassifier):
         Handles the preprocessing step. The features and labels are converted in vectors 
             and their shape is adjusted.
         '''
-        X = self.preprocess_features(features, {'dep': 0, 'pos': 0})
-        y = self.preprocess_labels(labels, 'O')
+        X = self.preprocess_features(features)
+        y = self.preprocess_labels(labels)
         
         # self.X_shape = X.shape   
         # print(self.X_shape) 
@@ -83,7 +83,7 @@ class NERClassifier(BaseClassifier):
     
     def test_model(self, collection:Collection):
         features = self.get_features(collection)
-        X = self.preprocess_features(features, {'dep': 0, 'pos': 0}, train=False)
+        X = self.preprocess_features(features, train=False)
         x_shapes = predict_by_shape(X)
         pred = []
         for x_items in x_shapes.values():

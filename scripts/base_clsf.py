@@ -25,10 +25,9 @@ class BaseClassifier:
         # Label encoder transforms labels in strings as numbers
         self.encoder = LabelEncoder()
 
-    def preprocess_features(self, features, null_value, train=True):
+    def preprocess_features(self, features, train=True):
         '''
         The features are converted to vectors and their shape is adjusted
-        `null_value`: to represent the null value to use in padding        
         '''
         # X = self._padding_dicts(features, null_value)
         X = features
@@ -41,10 +40,9 @@ class BaseClassifier:
 #         X = X.reshape(1921, 15, X.shape[1])
         return X
 
-    def preprocess_labels(self, labels, null_value):
+    def preprocess_labels(self, labels):
         '''
         The labels are converted in vectors and their shape is adjusted.
-        `null_value`: to represent the null value to use in padding
         '''
         # As with DictVectorizer, all the labels are fit a\nd transformed
         self.encoder.fit(list(itertools.chain(*labels)))
@@ -57,10 +55,9 @@ class BaseClassifier:
         self.n_labels = y[0].shape[-1]
         return y 
 
-    def _padding_dicts(self, X, null_value):
+    def _padding_dicts(self, X):
         '''
         Auxiliar function because the keras.pad_sequences does not accept dictionaries.
-        `null_value`: reprensents the value that will be used to insert in the end
         '''
         new_X = []
         for seq in X:
