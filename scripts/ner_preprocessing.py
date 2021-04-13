@@ -3,7 +3,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import spacy
 import networkx as nx
-from anntools import Sentence
+from anntools import Sentence, Keyphrase
 from utils import find_keyphrase_by_span
 
 
@@ -93,3 +93,49 @@ def get_instances(sentence:Sentence, labels=True):
         return features, list(labels)
     else:
         return features
+
+
+def postprocessing_labels(labels, indices, sentences):
+    next_id = 0
+    for sent_label, index in zip(labels, indices):
+        multiple_concepts = []
+        multiple_actions = []
+        multiple_predicates = []
+        multiple_references = []
+        sent = sentences[index]
+        tokens = nlp.tokenizer(sent.text)
+        for label, word in zip(sent_label, tokens):
+            concept, next_id, multiple_concepts = get_label('Concept', label, multiple_concepts, sent, next_id, word)
+            if not concept:
+                action, next_id, multiple_actions = get_label('Action', label, multiple_actions, sent, next_id, word)
+                if not action:
+                    reference, next_id, multiple_references = get_label('Reference', label, multiple_references, sent, next_id, word)
+                    if not reference:
+                        _, next_id, multiple_predicates = get_label('Predicate', label, multiple_predicates, sent, next_id, word)
+        next_id = create_keyphrase(sent, 'Concept', next_id, multiple_concepts)
+        next_id = create_keyphrase(sent, 'Action', next_id, multiple_actions)
+        next_id = create_keyphrase(sent, 'Predicate', next_id, multiple_predicates)
+        next_id = create_keyphrase(sent, 'Reference', next_id, multiple_references)
+
+
+def create_keyphrase(sent, label, next_id, multiple):
+    if not multiple: 
+        return next_id
+    sent.keyphrases.append(Keyphrase(sent, label, next_id, multiple))
+    return next_id + 1   
+
+
+def get_label(label, pred_label, multiple, sent, next_id, word):
+    if label not in pred_label:
+        return False, next_id, multiple
+    if pred_label == 'B-' + label:
+        next_id = create_keyphrase(sent, label, next_id, multiple)
+        multiple = []
+    try:
+        idx = multiple[-1][-1]
+    except IndexError:
+        idx = 0
+    i = sent.text.index(word.text, idx)
+    span = i, i + len(word)
+    multiple.append(span)
+    return True, next_id, multiple

@@ -2,6 +2,7 @@ from typing import List
 from anntools import Keyphrase
 from tensorflow.keras.utils import Sequence
 import numpy as np
+from itertools import groupby, chain
 
 def find_keyphrase_by_span(i:int, j:int, keyphrases:List[Keyphrase], sentence:str, nlp):
     '''
@@ -37,13 +38,17 @@ def train_by_shape(X, y):
     return x_shapes, y_shapes
 
 def predict_by_shape(X):
+#     return [list(g) for k, g in groupby(X, len)]
     x_shapes = {}
-    for itemX in X:
+    indeces = {}
+    for i, itemX in enumerate(X):
         try:
-            x_shapes[itemX.shape[0]].append(itemX)
+            x_shapes[len(itemX)].append(itemX)
+            indeces[len(itemX)].append(i)
         except:
-            x_shapes[itemX.shape[0]] = [itemX] #initially a list, because we're going to append items
-    return x_shapes
+            x_shapes[len(itemX)] = [itemX] #initially a list, because we're going to append items
+            indeces[len(itemX)] = [i]
+    return x_shapes.values(), chain(*indeces.values())
 
 class MyBatchGenerator(Sequence):
     'Generates data for Keras'

@@ -5,7 +5,7 @@ from base_clsf import BaseClassifier
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, Lambda
 
-from ner_preprocessing import get_instances
+from ner_preprocessing import get_instances, postprocessing_labels
 # from utils import DataGeneratorPredict
 # import tensorflow_addons as tfa
 # from tensorflow_addons.layers import CRF
@@ -14,6 +14,7 @@ from ner_preprocessing import get_instances
 import numpy as np
 from utils import predict_by_shape
 # from keras_contrib.layers import CRF
+
 
 class NERClassifier(BaseClassifier):
     "Classifier for the name entity resolution task"
@@ -84,11 +85,13 @@ class NERClassifier(BaseClassifier):
     def test_model(self, collection:Collection):
         features = self.get_features(collection)
         X = self.preprocess_features(features, train=False)
-        x_shapes = predict_by_shape(X)
+        x_shapes, indices = predict_by_shape(X)
         pred = []
-        for x_items in x_shapes.values():
+        for x_items in x_shapes:
             pred.extend(self.model.predict(np.asarray(x_items))) 
-        return self.convert_to_label(pred)
+        labels = self.convert_to_label(pred)
+        postprocessing_labels(labels, list(indices), collection)
+        return collection.sentences
     
     def run(self, collection: Collection):
         collection = collection.clone()
@@ -96,11 +99,11 @@ class NERClassifier(BaseClassifier):
         return collection
 
 if __name__ == "__main__":
-    collection = Collection().load_dir(Path('2021/ref/training'))
-    dev_set = Collection().load(Path('2021/eval/develop/scenario1-main/output.txt'))
+    # collection = Collection().load_dir(Path('2021/ref/training'))
+    dev_set = Collection().load(Path('2021/eval/develop/scenario1-main/input.txt'))
     # dev_set = Collection().load_dir(Path('2021/eval/develop/scenario1-main'))
     ner_clf = NERClassifier()
-    ner_clf.train(collection)
-    ner_clf.save_model('ner')
-    # ner_clf.load_model('ner')
+    # ner_clf.train(collection)
+    # ner_clf.save_model('ner')
+    ner_clf.load_model('ner')
     print(ner_clf.test_model(dev_set))
