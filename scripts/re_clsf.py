@@ -8,7 +8,7 @@ from base_clsf import BaseClassifier
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, Lambda
 
-from re_preprocessing import get_instances
+from re_utils import get_instances, postprocessing_labels
 from utils import predict_by_shape
 import numpy as np
 
@@ -80,11 +80,13 @@ class REClassifier(BaseClassifier):
     def test_model(self, collection:Collection):
         features = self.get_features(collection)
         X = self.preprocess_features(features, train=False)
-        x_shapes = predict_by_shape(X)
+        x_shapes, indices = predict_by_shape(X)
         pred = []
-        for x_items in x_shapes.values():
+        for x_items in x_shapes:
             pred.extend(self.model.predict(np.asarray(x_items))) 
-        return self.convert_to_label(pred)
+        labels = self.convert_to_label(pred)
+        postprocessing_labels(labels, list(indices), collection)
+        return collection.sentences
 
     def run(self, collection: Collection):
         collection = collection.clone()

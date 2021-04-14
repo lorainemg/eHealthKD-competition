@@ -5,7 +5,7 @@ from base_clsf import BaseClassifier
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, Lambda
 
-from ner_preprocessing import get_instances, postprocessing_labels
+from ner_utils import get_instances, postprocessing_labels
 # from utils import DataGeneratorPredict
 # import tensorflow_addons as tfa
 # from tensorflow_addons.layers import CRF
@@ -99,11 +99,11 @@ class NERClassifier(BaseClassifier):
         return collection
 
 if __name__ == "__main__":
-    # collection = Collection().load_dir(Path('2021/ref/training'))
+    collection = Collection().load_dir(Path('2021/ref/training'))
     dev_set = Collection().load(Path('2021/eval/develop/scenario1-main/input.txt'))
     # dev_set = Collection().load_dir(Path('2021/eval/develop/scenario1-main'))
     ner_clf = NERClassifier()
-    # ner_clf.train(collection)
-    # ner_clf.save_model('ner')
-    ner_clf.load_model('ner')
+    ner_clf.train(collection)
+    ner_clf.save_model('ner')
+    # ner_clf.load_model('ner')
     print(ner_clf.test_model(dev_set))
