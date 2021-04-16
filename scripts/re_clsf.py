@@ -7,10 +7,13 @@ from base_clsf import BaseClassifier
 
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, Lambda
+from tensorflow.keras.losses import categorical_crossentropy
 
 from re_utils import get_instances, postprocessing_labels
-from utils import predict_by_shape
+from utils import predict_by_shape, Metrics, weightedLoss
 import numpy as np
+from tensorflow_addons.metrics import FBetaScore
+
 
 class REClassifier(BaseClassifier):
     "Classifier for the relation extraction task"
@@ -40,8 +43,20 @@ class REClassifier(BaseClassifier):
 #         crf = CRF(8)  # CRF layer
 #         out = crf(outputs)  # output
 
+        # METRICS = [
+        #     metrics.TruePositives(name='tp'),
+        #     metrics.FalsePositives(name='fp'),
+        #     metrics.TrueNegatives(name='tn'),
+        #     metrics.FalseNegatives(name='fn'), 
+        #     metrics.BinaryAccuracy(name='accuracy'),
+        #     metrics.Precision(name='precision'),
+        #     metrics.Recall(name='recall'),
+        #     metrics.AUC(name='auc'),
+        #     metrics.AUC(name='prc', curve='PR'), # precision-recall curve
+        # ]
         model = Model(inputs=inputs, outputs=outputs)
-        model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
+        model.compile(optimizer="adam", metrics='accuracy',
+                    loss= weightedLoss(categorical_crossentropy, self.weights))
 #         model.compile(optimizer="rmsprop", loss=crf.loss_function, metrics=[crf.accuracy])
         model.summary()
         # model.compile(loss='binary_crossentropy', optimizer='adam')
@@ -55,7 +70,7 @@ class REClassifier(BaseClassifier):
         '''
         X = self.preprocess_features(features)
         y = self.preprocess_labels(labels)
-        
+        self.weights = self.get_weights(labels)
         # self.X_shape = X.shape  
         # self.y_shape = y.shape
         return X, y
@@ -85,6 +100,7 @@ class REClassifier(BaseClassifier):
         for x_items in x_shapes:
             pred.extend(self.model.predict(np.asarray(x_items))) 
         labels = self.convert_to_label(pred)
+        print(labels) 
         postprocessing_labels(labels, list(indices), collection)
         return collection.sentences
 
@@ -100,4 +116,4 @@ if __name__ == "__main__":
     ner_clf.train(collection)
     ner_clf.save_model('re')
     # ner_clf.load_model('re')
-    print(ner_clf.test_model(dev_set))
+    ner_clf.test_model(dev_set)

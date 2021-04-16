@@ -8,6 +8,7 @@ from utils import train_by_shape, MyBatchGenerator
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import load_model
+from sklearn.utils.class_weight import compute_class_weight
 
 import itertools
 import pickle
@@ -55,20 +56,26 @@ class BaseClassifier:
         self.n_labels = y[0].shape[-1]
         return y 
 
-    def _padding_dicts(self, X):
-        '''
-        Auxiliar function because the keras.pad_sequences does not accept dictionaries.
-        '''
-        new_X = []
-        for seq in X:
-            new_seq = []
-            for i in range(self.max_len):
-                try:
-                    new_seq.append(seq[i])
-                except:
-                    new_seq.append(null_value)
-            new_X.append(new_seq)
-        return new_X
+    def get_weights(self, labels):
+        unique_classes = np.array(self.encoder.classes_)
+        labels = np.concatenate(labels)
+        weights = compute_class_weight('balanced', unique_classes, labels)
+        weights = {i:v for i, v in enumerate(weights)}
+        return weights
+    # def _padding_dicts(self, X):
+    #     '''
+    #     Auxiliar function because the keras.pad_sequences does not accept dictionaries.
+    #     '''
+    #     new_X = []
+    #     for seq in X:
+    #         new_seq = []
+    #         for i in range(self.max_len):
+    #             try:
+    #                 new_seq.append(seq[i])
+    #             except:
+    #                 new_seq.append(null_value)
+    #         new_X.append(new_seq)
+    #     return new_X
 
     def fit_model(self, X, y, plot=False):
         '''
@@ -77,6 +84,7 @@ class BaseClassifier:
         # hist = self.model.fit(X, y, batch_size=32, epochs=5,
         #             validation_split=0.2, verbose=1)
         # hist = self.model.fit(MyBatchGenerator(X, y, batch_size=30), epochs=5)
+
         num_examples = len(X)
         steps_per_epoch = num_examples / 5
         # self.model.fit(self.generator(X, y), steps_per_epoch=steps_per_epoch, epochs=5)
@@ -85,7 +93,7 @@ class BaseClassifier:
             self.model.fit(
                 np.asarray(x_shapes[shape]), 
                 np.asarray(y_shapes[shape]),
-                batch_size=32, epochs=5)
+                epochs=5)
     
     def generator(self, X, y):
         x_shapes, y_shapes = train_by_shape(X, y)
