@@ -17,9 +17,10 @@ nlp.tokenizer.suffix_search = suffix_re.search
 # Preprocess the features, getting the training instances (features + labels)
 
 def get_features(tokens):
-    '''
+    """
     Given a list of tokens returns the features of those tokens.
-    They will be used for trainig in the first task (Name Entity Recognition)'''
+    They will be used for training in the first task (Name Entity Recognition)
+    """
     graph = nx.DiGraph()
     digraph = nx.DiGraph()
     features = []
@@ -41,10 +42,10 @@ def get_features(tokens):
 
 
 def get_labels(tokens, sentence:Sentence):
-    '''
+    """
     Given a list of tokens and the sentences containing them returns the labels of those tokens.
     They will be used for trainig in the first task (Name Entity Recognition)
-    '''
+    """
     text = sentence.text
     instances = {}
     i = 0

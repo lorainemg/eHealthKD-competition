@@ -16,7 +16,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class BaseClassifier:
-    'Base classifier of the ner and re task'
+    """Base classifier of the ner and re task"""
     def __init__(self):
         self.model = None
         self.max_len = 50
@@ -27,9 +27,9 @@ class BaseClassifier:
         self.encoder = LabelEncoder()
 
     def preprocess_features(self, features, train=True):
-        '''
+        """
         The features are converted to vectors and their shape is adjusted
-        '''
+        """
         # X = self._padding_dicts(features, null_value)
         X = features
         if train:
@@ -42,9 +42,9 @@ class BaseClassifier:
         return X
 
     def preprocess_labels(self, labels):
-        '''
+        """
         The labels are converted in vectors and their shape is adjusted.
-        '''
+        """
         # As with DictVectorizer, all the labels are fit a\nd transformed
         self.encoder.fit(list(itertools.chain(*labels)))
         y = [self.encoder.transform(label) for label in labels]
@@ -54,14 +54,16 @@ class BaseClassifier:
         # the labels are one-hot encoded, i.e, the number are represented in arrays.
         y = [to_categorical(elem, num_classes=len(self.encoder.classes_)) for elem in y]
         self.n_labels = y[0].shape[-1]
-        return y 
+        return y
 
     def get_weights(self, labels):
         unique_classes = np.array(self.encoder.classes_)
         labels = np.concatenate(labels)
         weights = compute_class_weight('balanced', unique_classes, labels)
         weights = {i:v for i, v in enumerate(weights)}
+        weights[3] /= 100
         return weights
+
     # def _padding_dicts(self, X):
     #     '''
     #     Auxiliar function because the keras.pad_sequences does not accept dictionaries.
@@ -78,9 +80,9 @@ class BaseClassifier:
     #     return new_X
 
     def fit_model(self, X, y, plot=False):
-        '''
+        """
         The model is fitted. The training begins
-        '''
+        """
         # hist = self.model.fit(X, y, batch_size=32, epochs=5,
         #             validation_split=0.2, verbose=1)
         # hist = self.model.fit(MyBatchGenerator(X, y, batch_size=30), epochs=5)
@@ -101,17 +103,17 @@ class BaseClassifier:
             yield np.asarray(x_shapes[shape]), np.asarray(y_shapes[shape])
 
     def save_model(self, name):
-        self.model.save(r'resources/%s_model.h5' %name)
-        pickle.dump(self.vectorizer, open(r'resources/%s_vectorizer.pkl' %name, 'wb'))
-        pickle.dump(self.encoder, open(r'resources/%s_encoder.pkl' %name, 'wb'))
+        self.model.save(fr'resources/{name}_model.h5')
+        pickle.dump(self.vectorizer, open(fr'resources/{name}_vectorizer.pkl', 'wb'))
+        pickle.dump(self.encoder, open(fr'resources/{name}_encoder.pkl', 'wb'))
     
     def load_model(self, name):
-        self.model = load_model(r'resources/%s_model.h5' %name)
-        self.vectorizer = pickle.load(open(r"resources/%s_vectorizer.pkl" %name, 'rb'))
-        self.encoder = pickle.load(open(r"resources/%s_encoder.pkl" %name, 'rb'))
+        self.model = load_model(fr'resources/{name}_model.h5')
+        self.vectorizer = pickle.load(open(fr"resources/{name}_vectorizer.pkl", 'rb'))
+        self.encoder = pickle.load(open(fr"resources/{name}_encoder.pkl", 'rb'))
 
     def convert_to_label(self, pred):
-        'Converts the predictions of the model in strings labels'
+        """Converts the predictions of the model in strings labels"""
         out = []
         for pred_i in pred:
             out_i = []
