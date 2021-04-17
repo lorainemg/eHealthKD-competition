@@ -1,16 +1,16 @@
 from typing import List
 from anntools import Relation, Sentence, Collection
 from utils import find_keyphrase_by_span
+import es_core_news_sm
 
 import os
-
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import spacy
 
 # import es_core_news_sm
 
-nlp = spacy.load('es_core_news_sm')
+nlp = es_core_news_sm.load()
 
 
 def get_keyphrases_pairs(keyphrases):

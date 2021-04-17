@@ -5,11 +5,11 @@ import spacy
 import networkx as nx
 from anntools import Sentence, Keyphrase
 from utils import find_keyphrase_by_span
+import es_core_news_sm
 
+nlp = es_core_news_sm.load()
 
-nlp = spacy.load('es_core_news_sm')
-
-sufixes = nlp.Defaults.suffixes + [r'%',r'\.']
+sufixes = nlp.Defaults.suffixes + (r'%',r'\.')
 suffix_re = spacy.util.compile_suffix_regex(sufixes)
 nlp.tokenizer.suffix_search = suffix_re.search
 
