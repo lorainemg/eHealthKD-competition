@@ -1,21 +1,15 @@
 from typing import List
 from anntools import Relation, Sentence, Collection
-from utils import find_keyphrase_by_span
-import es_core_news_sm
+from utils import find_keyphrase_by_span, nlp_es, nlp_en, detect_language
 
 import os
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
-import spacy
-
-# import es_core_news_sm
-
-nlp = es_core_news_sm.load()
 
 
 def get_keyphrases_pairs(keyphrases):
     """Makes keyphrases pairs to extract the relation"""
-    return [(keyphrase1, keyphrase2) for i, keyphrase1 in enumerate(keyphrases) for keyphrase2 in keyphrases[i + 1:]]
+    return [(keyphrase1, keyphrase2) for keyphrase1 in keyphrases for keyphrase2 in keyphrases]
 
 
 ################################ Preprocessing ################################
@@ -28,8 +22,8 @@ def find_relation(relations: List[Relation], entity1: int, entity2: int):
     # Ahora que lo pienso no estoy segura si entre 2 entidades puede establecerse más de una relación
     # En la práctica, anotando, nunca me pasó
     for rel in relations:
-        if rel.origin == entity1 and rel.destination == entity2 or \
-                rel.origin == entity2 and rel.destination == entity1:
+        if rel.origin == entity1 and rel.destination == entity2:
+            # or rel.origin == entity2 and rel.destination == entity1:
             return rel.label
     return 'empty'
 
@@ -95,6 +89,8 @@ def get_instances(sentence: Sentence, labels=True):
     Makes all the analysis of the sentence according to spacy preprocessing.
     Returns the features and the labels corresponding to those features in the sentence.
     """
+    lang = detect_language(sentence.text)
+    nlp = nlp_es if lang == 'es' else nlp_en
     doc = nlp(sentence.text)
     features = get_features(sentence, doc)
     if labels:

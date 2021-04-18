@@ -4,18 +4,16 @@ from pathlib import Path
 from base_clsf import BaseClassifier
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, Lambda
-
+from tensorflow.keras.losses import categorical_crossentropy
 from ner_utils import get_instances, postprocessing_labels
 # from utils import DataGeneratorPredict
 # import tensorflow_addons as tfa
-# from tensorflow_addons.layers import CRF
+from tensorflow_addons.layers import CRF
 
 # from keras_crf import CRF
 import numpy as np
-from utils import predict_by_shape
+from utils import predict_by_shape, weighted_loss
 
-
-# from keras_contrib.layers import CRF
 
 
 class NERClassifier(BaseClassifier):
@@ -42,16 +40,15 @@ class NERClassifier(BaseClassifier):
                                      recurrent_dropout=0.1))(inputs)  # variational biLSTM
         # outputs = Bidirectional(LSTM(units=512, return_sequences=True,
         #                    recurrent_dropout=0.2, dropout=0.2))(outputs)
-        outputs = TimeDistributed(Dense(self.n_labels, activation="softmax"))(
-            outputs)  # a dense layer as suggested by neuralNer
-        #         crf = CRF(8)  # CRF layer
-        #         out = crf(outputs)  # output
+        # outputs = TimeDistributed(Dense(self.n_labels, activation="softmax"))(
+        #     outputs)  # a dense layer as suggested by neuralNer
+        # crf = CRF(self.n_labels)  # CRF layer
+        # outputs = crf(outputs)  # output
 
         model = Model(inputs=inputs, outputs=outputs)
-        model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
-        #         model.compile(optimizer="rmsprop", loss=crf.loss_function, metrics=[crf.accuracy])
+        model.compile(optimizer="adam", metrics=self.metrics,
+                      loss=categorical_crossentropy)
         model.summary()
-        # model.compile(loss='binary_crossentropy', optimizer='adam')
         self.model = model
 
     def preprocessing(self, features, labels):
@@ -61,11 +58,7 @@ class NERClassifier(BaseClassifier):
         """
         X = self.preprocess_features(features)
         y = self.preprocess_labels(labels)
-
-        # self.X_shape = X.shape   
-        # print(self.X_shape) 
-        # self.y_shape = y.shape
-
+        # self.get_weights(labels)
         return X, y
 
     def get_sentences(self, collection: Collection):
@@ -84,7 +77,8 @@ class NERClassifier(BaseClassifier):
         """Giving a collection, the features of its sentences are returned"""
         return [get_instances(sentence, False) for sentence in collection]
 
-    def test_model(self, collection: Collection):
+    def test_model(self, collection: Collection) -> Collection:
+        collection = collection.clone()
         features = self.get_features(collection)
         X = self.preprocess_features(features, train=False)
         x_shapes, indices = predict_by_shape(X)
@@ -92,21 +86,27 @@ class NERClassifier(BaseClassifier):
         for x_items in x_shapes:
             pred.extend(self.model.predict(np.asarray(x_items)))
         labels = self.convert_to_label(pred)
-        postprocessing_labels(labels, list(indices), collection)
-        return collection.sentences
-
-    def run(self, collection: Collection):
-        collection = collection.clone()
-        # returns a collection with everything annotated
+        postprocessing_labels(labels, indices, collection)
         return collection
+
+    def eval(self, path: Path, submit: Path):
+        folder = 'scenario2-taskA'
+        scenario = path / 'scenario2-taskA'
+        print(f"Evaluating on {scenario}")
+
+        input_data = Collection().load(scenario / "input.txt")
+        print(f'Loaded {len(input_data)} input sentences')
+        output_data = self.test_model(input_data)
+
+        print(f"Writing output to {submit / folder}")
+        output_data.dump(submit / folder / "output.txt", skip_empty_sentences=False)
 
 
 if __name__ == "__main__":
     collection = Collection().load_dir(Path('2021/ref/training'))
-    dev_set = Collection().load(Path('2021/eval/develop/scenario1-main/input.txt'))
     # dev_set = Collection().load_dir(Path('2021/eval/develop/scenario1-main'))
     ner_clf = NERClassifier()
     ner_clf.train(collection)
     ner_clf.save_model('ner')
     # ner_clf.load_model('ner')
-    print(ner_clf.test_model(dev_set))
+    ner_clf.eval(Path('2021/eval/develop/'), Path('2021/submissions/ner/develop/run1'))

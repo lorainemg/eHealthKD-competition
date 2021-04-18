@@ -9,7 +9,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import load_model
 from sklearn.utils.class_weight import compute_class_weight
-
+from tensorflow.keras import metrics
 import itertools
 import pickle
 import numpy as np
@@ -25,6 +25,20 @@ class BaseClassifier:
         # Label Encoder is used to transform the labels
         # Label encoder transforms labels in strings as numbers
         self.encoder = LabelEncoder()
+        # Weights of all the labels, we are in presence of an imbalance class problem
+        self.weights = None
+        # different metrics to take into account
+        self.metrics = [
+            metrics.TruePositives(name='tp'),
+            metrics.FalsePositives(name='fp'),
+            metrics.TrueNegatives(name='tn'),
+            metrics.FalseNegatives(name='fn'),
+            metrics.BinaryAccuracy(name='accuracy'),
+            metrics.Precision(name='precision'),
+            metrics.Recall(name='recall'),
+            metrics.AUC(name='auc'),
+            metrics.AUC(name='prc', curve='PR'), # precision-recall curve
+        ]
 
     def preprocess_features(self, features, train=True):
         """
@@ -60,9 +74,7 @@ class BaseClassifier:
         unique_classes = np.array(self.encoder.classes_)
         labels = np.concatenate(labels)
         weights = compute_class_weight('balanced', unique_classes, labels)
-        weights = {i:v for i, v in enumerate(weights)}
-        weights[3] /= 100
-        return weights
+        self.weights = {i: v for i, v in enumerate(weights)}
 
     # def _padding_dicts(self, X):
     #     '''

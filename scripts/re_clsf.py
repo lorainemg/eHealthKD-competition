@@ -8,9 +8,8 @@ from base_clsf import BaseClassifier
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, Lambda
 from tensorflow.keras.losses import categorical_crossentropy
-from tensorflow.keras import metrics
 from re_utils import get_instances, postprocessing_labels
-from utils import predict_by_shape, Metrics, weighted_loss
+from utils import predict_by_shape, weighted_loss
 import numpy as np
 from tensorflow_addons.metrics import FBetaScore
 
@@ -43,20 +42,8 @@ class REClassifier(BaseClassifier):
             outputs)  # a dense layer as suggested by neuralNer
         #         crf = CRF(8)  # CRF layer
         #         out = crf(outputs)  # output
-
-        METRICS = [
-            metrics.TruePositives(name='tp'),
-            metrics.FalsePositives(name='fp'),
-            metrics.TrueNegatives(name='tn'),
-            metrics.FalseNegatives(name='fn'),
-            metrics.BinaryAccuracy(name='accuracy'),
-            metrics.Precision(name='precision'),
-            metrics.Recall(name='recall'),
-            metrics.AUC(name='auc'),
-            metrics.AUC(name='prc', curve='PR'), # precision-recall curve
-        ]
         model = Model(inputs=inputs, outputs=outputs)
-        model.compile(optimizer="adam", metrics=METRICS,
+        model.compile(optimizer="adam", metrics=self.metrics,
                       loss=weighted_loss(categorical_crossentropy, self.weights))
         #         model.compile(optimizer="rmsprop", loss=crf.loss_function, metrics=[crf.accuracy])
         model.summary()
@@ -70,7 +57,7 @@ class REClassifier(BaseClassifier):
         """
         X = self.preprocess_features(features)
         y = self.preprocess_labels(labels)
-        self.weights = self.get_weights(labels)
+        self.get_weights(labels)
         # self.X_shape = X.shape  
         # self.y_shape = y.shape
         return X, y
@@ -99,14 +86,8 @@ class REClassifier(BaseClassifier):
         for x_items in x_shapes:
             pred.extend(self.model.predict(np.asarray(x_items)))
         labels = self.convert_to_label(pred)
-        print(labels)
-        postprocessing_labels(labels, list(indices), collection)
+        postprocessing_labels(labels, indices, collection)
         return collection.sentences
-
-    def run(self, collection: Collection):
-        collection = collection.clone()
-        # returns a collection with everything annotated
-        return collection
 
 
 if __name__ == "__main__":

@@ -12,6 +12,28 @@ import tensorflow as tf
 import tensorflow.keras.backend as K
 from itertools import chain
 
+import fasttext
+import re
+
+import es_core_news_sm, en_core_web_sm
+nlp_es = es_core_news_sm.load()
+nlp_en = en_core_web_sm.load()
+
+
+# model for detecting the language of a sentence
+lid_model = fasttext.load_model("resources/lid.176.ftz")
+# regex to parse the output of the language identification model
+lid_regex = re.compile(r"__label__(en|es)")
+
+
+def detect_language(sentence: str) -> str:
+    # The tokens and its features are extracted with spacy
+    lang, _ = lid_model.predict(sentence)
+    try:
+        lang = lid_regex.findall(lang[0])[0]
+    except IndexError:
+        lang = 'es'
+    return lang
 
 def find_keyphrase_by_span(i: int, j: int, keyphrases: List[Keyphrase], sentence: str, nlp):
     """
@@ -123,13 +145,13 @@ def weighted_loss(originalLossFunc, weightsList):
 
         # argmax returns the index of the element with the greatest value
         # done in the class axis, it returns the class index
-        print("###############################################################")
         classSelectors = K.argmax(true, axis=axis)
+   
         # if your loss is sparse, use only true as classSelectors
         tf.cast(classSelectors, tf.int64)
         # classSelectors = classSelectors.astype(np.int32)
         # print(type(classSelectors))
-        print('###########################################################################')
+   
         # considering weights are ordered by class, for each class
         # true(1) if the class index is equal to the weight index
         classSelectors = [K.equal(np.int64(i), classSelectors) for i in range(len(weightsList))]

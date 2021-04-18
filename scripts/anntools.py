@@ -626,6 +626,10 @@ class Collection:
         self.sentences: List[Sentence] = sentences or []
 
     def clone(self, skip_empty=False) -> "Collection":
+        """
+
+        :rtype: object
+        """
         return Collection(
             [s.clone() for s in self.sentences if not skip_empty or s.annotated]
         )
