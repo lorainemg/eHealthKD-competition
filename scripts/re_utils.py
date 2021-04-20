@@ -9,7 +9,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 def get_keyphrases_pairs(keyphrases):
     """Makes keyphrases pairs to extract the relation"""
-    return [(keyphrase1, keyphrase2) for keyphrase1 in keyphrases for keyphrase2 in keyphrases]
+    return [(keyphrase1, keyphrase2) for i, keyphrase1 in enumerate(keyphrases) for keyphrase2 in keyphrases[i+1:]]
 
 
 ################################ Preprocessing ################################
@@ -17,13 +17,13 @@ def get_keyphrases_pairs(keyphrases):
 
 def find_relation(relations: List[Relation], entity1: int, entity2: int):
     """
-    Given the ids of two keyphrases, returns the label of the entity conecting them
+    Given the ids of two keyphrases, returns the label of the entity connecting them
     """
     # Ahora que lo pienso no estoy segura si entre 2 entidades puede establecerse más de una relación
     # En la práctica, anotando, nunca me pasó
     for rel in relations:
-        if rel.origin == entity1 and rel.destination == entity2:
-            # or rel.origin == entity2 and rel.destination == entity1:
+        if rel.origin == entity1 and rel.destination == entity2 \
+                or rel.origin == entity2 and rel.destination == entity1:
             return rel.label
     return 'empty'
 
@@ -69,11 +69,12 @@ def get_features(sentence: Sentence, doc: List, nlp):
             # Ideas:
             # el tamaño del camino del dependency graph entre los 2 tokens
             # quizá la secuencia entera a seguir codificada entre los 2 tokens principales
+            # la relación de dependencia del token principal
         })
     return features
 
 
-def get_labels(sentence: Sentence, doc):
+def get_labels(sentence: Sentence):
     """
     Returns the label if the relation between every pair of keyphrases.
     For the pairs of keyphrases with no relation, 'empty' is returned.
@@ -94,7 +95,7 @@ def get_instances(sentence: Sentence, labels=True):
     doc = nlp(sentence.text)
     features = get_features(sentence, doc, nlp)
     if labels:
-        labels = get_labels(sentence, doc)
+        labels = get_labels(sentence)
         return features, labels
     else:
         return features
