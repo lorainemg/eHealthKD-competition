@@ -4,9 +4,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import spacy
 import networkx as nx
-from anntools import Sentence, Keyphrase
+from anntools import Sentence, Keyphrase, Collection
 from utils import find_keyphrase_by_span, detect_language, nlp_es, nlp_en
-
+from itertools import chain
+import numpy as np
 
 sufixes = tuple(nlp_es.Defaults.suffixes) + (r'%', r'\.')
 suffix_re = spacy.util.compile_suffix_regex(sufixes)
@@ -15,7 +16,7 @@ nlp_es.tokenizer.suffix_search = suffix_re.search
 
 ################################ Preprocessing ################################
 # Preprocess the features, getting the training instances (features + labels)
-def get_features(tokens):
+def get_features(tokens, char2idx):
     """
     Given a list of tokens returns the features of those tokens.
     They will be used for training in the first task (Name Entity Recognition)
@@ -23,7 +24,9 @@ def get_features(tokens):
     graph = nx.DiGraph()
     digraph = nx.DiGraph()
     features = []
+    X_char = []
     for token in tokens:
+        word_seq = []
         # Constructs the dependency graph, both not directed and directed
         # Right now its not being used for nothing
         # Creates and edge for each token's children
@@ -37,7 +40,16 @@ def get_features(tokens):
             'pos': token.pos_,
             'lemma': token.lemma_
         })
-    return features
+        for i in range(10):
+            try:
+                w_i = token.text[i]
+                word_seq.append(char2idx[w_i])
+            except KeyError:
+                word_seq.append(char2idx['UNK'])
+            except IndexError:
+                word_seq.append(char2idx['PAD'])
+        X_char.append(np.array(word_seq))
+    return features, X_char
 
 
 def get_labels(tokens, sentence: Sentence, nlp):
@@ -57,7 +69,7 @@ def get_labels(tokens, sentence: Sentence, nlp):
     return instances.values()
 
 
-def get_instances(sentence: Sentence, labels=True):
+def get_instances(sentence: Sentence, char2idx, labels=True):
     """
     Makes all the analysis of the sentence according to spacy.
     Returns the features and the labels corresponding to those features in the sentence.
@@ -65,12 +77,70 @@ def get_instances(sentence: Sentence, labels=True):
     lang = detect_language(sentence.text)
     nlp = nlp_es if lang == 'es' else nlp_en
     doc = nlp(sentence.text)
-    features = get_features(doc)
+    features, X_char = get_features(doc, char2idx)
     if labels:
         labels = get_labels(doc, sentence, nlp)
-        return features, list(labels)
+        return features, X_char, list(labels)
     else:
-        return features
+        return features, X_char
+
+
+def get_char2idx(collection: Collection):
+    """
+    Gets the char dicctionary
+    :param collection: Collection with all the sentences
+    :return: Dictionary with all the characters in the collection
+    """
+    chars = set([w_i for sentence in collection.sentences for w_i in sentence.text])
+    char2idx = {c: i + 2 for i, c in enumerate(chars)}
+    char2idx['PAD'] = 0
+    char2idx['UNK'] = 1
+    return char2idx
+
+
+def train_by_shape(X, y, X_char):
+    """
+    Separates the features and labels by its shape
+    :param X: Word-features
+    :param y: Labels
+    :param X_char: X-char mappings
+    :return: 3 dictionaries of sublists of the parameters separated by there size
+    """
+    x_shapes = {}
+    y_shapes = {}
+    x_char_shapes = {}
+    for itemX, X_char, itemY in zip(X, X_char, y):
+        try:
+            x_shapes[itemX.shape[0]].append(itemX)
+            x_char_shapes[itemX.shape[0]].append(X_char)
+            y_shapes[itemX.shape[0]].append(itemY)
+        except:
+            x_shapes[itemX.shape[0]] = [itemX]  # initially a list, because we're going to append items
+            x_char_shapes[itemX.shape[0]] = [X_char]
+            y_shapes[itemX.shape[0]] = [itemY]
+    return x_shapes, x_char_shapes, y_shapes
+
+
+def predict_by_shape(X, X_char):
+    """
+    Separates the features by its shape
+    :param X: Word-features
+    :param X_char: X-char mappings
+    :return: 2 dictionaries of sublists of the parameters separated by there size
+    """
+    x_char_shapes = {}
+    x_shapes = {}
+    indices = {}
+    for i, (itemX, X_char) in enumerate(zip(X, X_char)):
+        try:
+            x_char_shapes[itemX.shape[0]].append(X_char)
+            x_shapes[len(itemX)].append(itemX)
+            indices[len(itemX)].append(i)
+        except:
+            x_shapes[len(itemX)] = [itemX]  # initially a list, because we're going to append items
+            x_char_shapes[itemX.shape[0]] = [X_char]
+            indices[len(itemX)] = [i]
+    return x_shapes.values(), x_char_shapes.values(), chain(*indices.values())
 
 
 ################################ Postprocessing ################################

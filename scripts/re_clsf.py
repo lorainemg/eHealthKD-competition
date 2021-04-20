@@ -4,12 +4,13 @@ from pathlib import Path
 # from typing import List
 
 from base_clsf import BaseClassifier
+from re_utils import get_instances, postprocessing_labels, predict_by_shape, train_by_shape
+import score
 
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, Lambda
 from tensorflow.keras.losses import categorical_crossentropy
-from re_utils import get_instances, postprocessing_labels
-from utils import predict_by_shape, weighted_loss
+from utils import weighted_loss
 import numpy as np
 from tensorflow_addons.metrics import FBetaScore
 
@@ -78,7 +79,25 @@ class REClassifier(BaseClassifier):
         """Giving a collection, the features of its sentences are returned"""
         return [get_instances(sentence, labels=False) for sentence in collection]
 
-    def test_model(self, collection: Collection):
+    def fit_model(self, X, y, plot=False):
+        """
+        The model is fitted. The training begins
+        """
+        # hist = self.model.fit(X, y, batch_size=32, epochs=5,
+        #             validation_split=0.2, verbose=1)
+        # hist = self.model.fit(MyBatchGenerator(X, y, batch_size=30), epochs=5)
+
+        num_examples = len(X)
+        steps_per_epoch = num_examples / 5
+        # self.model.fit(self.generator(X, y), steps_per_epoch=steps_per_epoch, epochs=5)
+        x_shapes, y_shapes = train_by_shape(X, y)
+        for shape in x_shapes:
+            self.model.fit(
+                np.asarray(x_shapes[shape]),
+                np.asarray(y_shapes[shape]),
+                epochs=5)
+
+    def test_model(self, collection: Collection) -> Collection:
         features = self.get_features(collection)
         X = self.preprocess_features(features, train=False)
         x_shapes, indices = predict_by_shape(X)
@@ -87,14 +106,29 @@ class REClassifier(BaseClassifier):
             pred.extend(self.model.predict(np.asarray(x_items)))
         labels = self.convert_to_label(pred)
         postprocessing_labels(labels, indices, collection)
-        return collection.sentences
+        return collection
+
+    def eval(self, path: Path, submit: Path):
+        folder = 'scenario3-taskB'
+        scenario = path / folder
+        print(f"Evaluating on {scenario}")
+
+        input_data = Collection().load(scenario / "input.txt")
+        print(f'Loaded {len(input_data)} input sentences')
+        output_data = self.test_model(input_data)
+
+        print(f"Writing output to {submit / folder}")
+        output_data.dump(submit / folder / "output.txt", skip_empty_sentences=False)
 
 
 if __name__ == "__main__":
     collection = Collection().load_dir(Path('2021/ref/training'))
     dev_set = Collection().load(Path('2021/eval/develop/scenario1-main/output.txt'))
-    ner_clf = REClassifier()
-    ner_clf.train(collection)
-    ner_clf.save_model('re')
+    re_clf = REClassifier()
+    re_clf.train(collection)
+    re_clf.save_model('re')
     # ner_clf.load_model('re')
-    ner_clf.test_model(dev_set)
+    re_clf.eval(Path('2021/eval/develop/'), Path('2021/submissions/ner/develop/run1'))
+    score.main(Path('2021/eval/develop'),
+               Path('2021/submissions/ner/develop'),
+               runs=[1], scenarios=[3], verbose=True, prefix="")
