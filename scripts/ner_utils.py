@@ -27,14 +27,6 @@ def get_features(tokens, char2idx):
     X_char = []
     for token in tokens:
         word_seq = []
-        # Constructs the dependency graph, both not directed and directed
-        # Right now its not being used for nothing
-        # Creates and edge for each token's children
-        for child in token.children:
-            digraph.add_edge(token.i, child.i)
-            graph.add_edge(token.i, child.i, attr_dict={'dir': '/'})
-            graph.add_edge(child.i, token.i, attr_dict={'dir': '\\'})
-            # edges.append((token.i, child.i))
         features.append({
             'dep': token.dep_,
             'pos': token.pos_,
@@ -65,7 +57,8 @@ def get_labels(tokens, sentence: Sentence, nlp):
         n = len(token.text)
         i = idx + n
         # instances[(idx, idx + n)] = classify_as_keyphrase(token.text, sentence.keyphrases, idx)
-        _, instances[(idx, idx + n)] = find_keyphrase_by_span(idx, idx + n, sentence.keyphrases, sentence.text, nlp)
+        _, labels = find_keyphrase_by_span(idx, idx + n, sentence.keyphrases, sentence.text, nlp)
+        instances[(idx, idx + n)] = labels[0]
     return instances.values()
 
 

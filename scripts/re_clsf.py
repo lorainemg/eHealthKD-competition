@@ -24,10 +24,10 @@ class REClassifier(BaseClassifier):
         """
         features, labels = self.get_sentences(collection)
         X, y = self.preprocessing(features, labels)
-        self.get_bi_lstm_model('concat')
+        self.get_model()
         return self.fit_model(X, y)
 
-    def get_bi_lstm_model(self, mode: str):
+    def get_model(self):
         """
         Construct the neural network architecture using the keras functional api.
         `mode` is the mode where the lstm are joined in the bidirectional layer, (its not currently being used)

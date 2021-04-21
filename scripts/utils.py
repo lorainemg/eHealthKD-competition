@@ -9,14 +9,15 @@ from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.metrics import Metric
 import tensorflow as tf
 import tensorflow.keras.backend as K
+import networkx as nx
 
 import fasttext
 import re
 
 import es_core_news_sm, en_core_web_sm
+
 nlp_es = es_core_news_sm.load()
 nlp_en = en_core_web_sm.load()
-
 
 # model for detecting the language of a sentence
 lid_model = fasttext.load_model("resources/lid.176.ftz")
@@ -33,28 +34,72 @@ def detect_language(sentence: str) -> str:
         lang = 'es'
     return lang
 
+
 def find_keyphrase_by_span(i: int, j: int, keyphrases: List[Keyphrase], sentence: str, nlp):
     """
     Returns the keyphrase id and the tag of a keyphrase based on the indices that a
     token occupies in a given sentence
     """
-    # TODO: This has to handle correctly multitokens to work properly, so it should return a list of id / labels
-    token = sentence[i:j]
+    keyphrases_id = []
+    keyphrases_labels = []
     for keyphrase in keyphrases:
         for idx, (x, y) in enumerate(keyphrase.spans):
             word = sentence[x:y]
+            # if the token is contained in the keyphrase
             if x <= i and y >= j:
                 if idx == 0:
-                    return keyphrase.id, 'B-' + keyphrase.label
+                    keyphrases_id.append(keyphrase.id)
+                    keyphrases_labels.append('B-' + keyphrase.label)
                 else:
-                    return keyphrase.id, 'I-' + keyphrase.label
+                    keyphrases_id.append(keyphrase.id)
+                    keyphrases_labels.append('I-' + keyphrase.label)
+                break
+            # if the keyphrase is contained in the token
             elif i <= x and j >= y:
                 if idx == 0:
                     tokens = nlp.tokenizer(word)
                     if i + len(tokens[0]) <= j:
-                        return keyphrase.id, 'B-' + keyphrase.label
-                return keyphrase.id, 'I-' + keyphrase.label
-    return None, 'O'
+                        keyphrases_id.append(keyphrase.id)
+                        keyphrases_labels.append('B-' + keyphrase.label)
+                        break
+                keyphrases_id.append(keyphrase.id)
+                keyphrases_labels.append('I-' + keyphrase.label)
+                break
+    if keyphrases_id:
+        return keyphrases_id, keyphrases_labels
+    else:
+        return None, ['O']
+
+
+def get_dependency_graph(tokens: List, directed=False):
+    """Constructs the dependency graph, directed or undirected"""
+    graph = nx.DiGraph()
+    for token in tokens:
+        for child in token.children:
+            if directed:
+                graph.add_edge(token.i, child.i)
+            else:
+                graph.add_edge(token.i, child.i, attr_dict={'dir': '/'})
+                graph.add_edge(child.i, token.i, attr_dict={'dir': '\\'})
+    return graph
+
+
+def lowest_common_ancestor(tokens: List, graph: nx.DiGraph):
+    """Given a list of tokens, it finds his lowest common ancestor in the dependency graph"""
+    if len(tokens) == 1:
+        return tokens[0].i
+    else:
+        try:
+            lca = nx.lowest_common_ancestor(graph, tokens[0].i, tokens[1].i)
+        except nx.exception.NodeNotFound:
+            lca = min(tokens[0].i, tokens[1].i)
+        for token in tokens[2:]:
+            try:
+                lca = nx.lowest_common_ancestor(graph, lca, token.i)
+            except nx.exception.NodeNotFound:
+                lca = min(token.i, lca)
+        return lca
+
 
 class MyBatchGenerator(Sequence):
     """Generates data for Keras"""
@@ -98,12 +143,12 @@ def weighted_loss(originalLossFunc, weightsList):
         # argmax returns the index of the element with the greatest value
         # done in the class axis, it returns the class index
         classSelectors = K.argmax(true, axis=axis)
-   
+
         # if your loss is sparse, use only true as classSelectors
         tf.cast(classSelectors, tf.int64)
         # classSelectors = classSelectors.astype(np.int32)
         # print(type(classSelectors))
-   
+
         # considering weights are ordered by class, for each class
         # true(1) if the class index is equal to the weight index
         classSelectors = [K.equal(np.int64(i), classSelectors) for i in range(len(weightsList))]
@@ -128,4 +173,5 @@ def weighted_loss(originalLossFunc, weightsList):
         loss = loss * weightMultiplier
 
         return loss
+
     return loss_func

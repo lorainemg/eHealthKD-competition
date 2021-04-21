@@ -1,6 +1,6 @@
 from typing import List
 from anntools import Relation, Sentence, Collection
-from utils import find_keyphrase_by_span, nlp_es, nlp_en, detect_language
+from utils import find_keyphrase_by_span, nlp_es, nlp_en, detect_language, get_dependency_graph, lowest_common_ancestor
 from itertools import chain
 import os
 
@@ -37,14 +37,15 @@ def find_keyphrase_tokens(sentence: Sentence, doc: List, nlp):
         idx = text.index(token.text, i)
         n = len(token.text)
         i = idx + n
-        keyphrase_id, _ = find_keyphrase_by_span(idx, idx + n, sentence.keyphrases, text, nlp)
-        if keyphrase_id is None:
+        keyphrases_ids, _ = find_keyphrase_by_span(idx, idx + n, sentence.keyphrases, text, nlp)
+        if keyphrases_ids is None:
             continue
         #         print(keyphrase_id, token)
-        try:
-            keyphrases[keyphrase_id].append(token)
-        except:
-            keyphrases[keyphrase_id] = [token]
+        for keyphrase_id in keyphrases_ids:
+            try:
+                keyphrases[keyphrase_id].append(token)
+            except KeyError:
+                keyphrases[keyphrase_id] = [token]
     return keyphrases
 
 
@@ -54,16 +55,19 @@ def get_features(sentence: Sentence, doc: List, nlp):
     """
     features = []
     keyphrases = find_keyphrase_tokens(sentence, doc, nlp)
+    graph = get_dependency_graph(doc, directed=True)
     for keyphrase1, keyphrase2 in get_keyphrases_pairs(sentence.keyphrases):
-        try:
-            tokens1 = keyphrases[keyphrase1.id]
-            tokens2 = keyphrases[keyphrase2.id]
-        except:
-            # This doesn't work properly because the multitokens are not recognize
-            pass
+        lca1 = lowest_common_ancestor(keyphrases[keyphrase1.id], graph)
+        lca2 = lowest_common_ancestor(keyphrases[keyphrase2.id], graph)
+        token1 = doc[lca1]
+        token2 = doc[lca2]
         features.append({
-            'origin': keyphrase1.text,
-            'destination': keyphrase2.text,
+            'origin_dtag': token1.dep_,
+            'origin_pos': token1.pos_,
+            'destination_dtag': token2.dep_,
+            'destination_pos': token2.pos_,
+            'origin': token1.lemma_,
+            'destination': token2.lemma_,
             'origin_tag': keyphrase1.label,
             'destination_tag': keyphrase2.label
             # Ideas:
