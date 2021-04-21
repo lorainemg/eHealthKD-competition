@@ -127,7 +127,7 @@ if __name__ == "__main__":
     re_clf = REClassifier()
     re_clf.train(collection)
     re_clf.save_model('re')
-    # ner_clf.load_model('re')
+    # re_clf.load_model('re')
     re_clf.eval(Path('2021/eval/develop/'), Path('2021/submissions/ner/develop/run1'))
     score.main(Path('2021/eval/develop'),
                Path('2021/submissions/ner/develop'),

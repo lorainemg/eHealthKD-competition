@@ -1,6 +1,7 @@
 from typing import List
 from anntools import Relation, Sentence, Collection
 from utils import find_keyphrase_by_span, nlp_es, nlp_en, detect_language, get_dependency_graph, lowest_common_ancestor
+from utils import get_dependency_path
 from itertools import chain
 import os
 
@@ -61,19 +62,18 @@ def get_features(sentence: Sentence, doc: List, nlp):
         lca2 = lowest_common_ancestor(keyphrases[keyphrase2.id], graph)
         token1 = doc[lca1]
         token2 = doc[lca2]
+        dep_path, dep_len = get_dependency_path(graph, token1.i, token2.i, doc)
         features.append({
             'origin_dtag': token1.dep_,
             'origin_pos': token1.pos_,
             'destination_dtag': token2.dep_,
             'destination_pos': token2.pos_,
-            'origin': token1.lemma_,
-            'destination': token2.lemma_,
+            # 'origin': token1.lemma_,
+            # 'destination': token2.lemma_,
             'origin_tag': keyphrase1.label,
-            'destination_tag': keyphrase2.label
-            # Ideas:
-            # el tamaño del camino del dependency graph entre los 2 tokens
-            # quizá la secuencia entera a seguir codificada entre los 2 tokens principales
-            # la relación de dependencia del token principal
+            'destination_tag': keyphrase2.label,
+            'dep_path': dep_path,
+            'dep_len': dep_len
         })
     return features
 

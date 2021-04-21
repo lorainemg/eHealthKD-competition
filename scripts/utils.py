@@ -84,7 +84,7 @@ def get_dependency_graph(tokens: List, directed=False):
     return graph
 
 
-def lowest_common_ancestor(tokens: List, graph: nx.DiGraph):
+def lowest_common_ancestor(tokens: List, graph: nx.DiGraph) -> int:
     """Given a list of tokens, it finds his lowest common ancestor in the dependency graph"""
     if len(tokens) == 1:
         return tokens[0].i
@@ -98,7 +98,22 @@ def lowest_common_ancestor(tokens: List, graph: nx.DiGraph):
                 lca = nx.lowest_common_ancestor(graph, lca, token.i)
             except nx.exception.NodeNotFound:
                 lca = min(token.i, lca)
-        return lca
+        return lca if lca is not None else tokens[0].i
+
+
+def get_dependency_path(graph: nx.DiGraph, token1: int, token2: int, sent):
+    """
+    Gets the shortest path between the two tokens in the dependency tree.
+    Returns the path and its length, otherwise returns null
+    """
+    try:
+        path_list = nx.dijkstra_path(graph, token1, token2)
+        dep_path = ""
+        for node in path_list:
+            dep_path += sent[node].dep_ + '/'
+        return dep_path, len(path_list)
+    except:
+        return 'null', 'null'
 
 
 class MyBatchGenerator(Sequence):
