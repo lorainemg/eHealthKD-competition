@@ -4,7 +4,7 @@ from pathlib import Path
 # from typing import List
 
 from base_clsf import BaseClassifier
-from re_utils import get_instances, postprocessing_labels, predict_by_shape, train_by_shape
+from re_utils import load_training_relations, load_testing_relations, postprocessing_labels, predict_by_shape, train_by_shape
 import score
 
 from tensorflow.keras.models import Model
@@ -70,14 +70,14 @@ class REClassifier(BaseClassifier):
         features = []
         labels = []
         for sentence in collection:
-            feat, label = get_instances(sentence, labels=True)
+            feat, label = load_training_relations(sentence, 0.6)
             features.append(feat)
             labels.append(label)
         return features, labels
 
     def get_features(self, collection: Collection):
         """Giving a collection, the features of its sentences are returned"""
-        return [get_instances(sentence, labels=False) for sentence in collection]
+        return [load_testing_relations(sentence) for sentence in collection]
 
     def fit_model(self, X, y, plot=False):
         """
