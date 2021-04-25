@@ -16,7 +16,7 @@ def get_keyphrases_pairs(keyphrases):
 
 ################################ Preprocessing ################################
 # Preprocess the features, getting the training instances (features + labels)
-def find_keyphrase_tokens(sentence: Sentence, doc: List, nlp):
+def find_keyphrase_tokens(sentence: Sentence, doc: List):
     """Returns the spacy tokens corresponding to a keyphrase"""
     text = sentence.text
     keyphrases = {}
@@ -25,9 +25,7 @@ def find_keyphrase_tokens(sentence: Sentence, doc: List, nlp):
         idx = text.index(token.text, i)
         n = len(token.text)
         i = idx + n
-        keyphrases_ids, _ = find_keyphrase_by_span(idx, idx + n, sentence.keyphrases, text, nlp)
-        if keyphrases_ids is None:
-            continue
+        keyphrases_ids = find_keyphrase_by_span(idx, idx + n, sentence.keyphrases)
         for keyphrase_id in keyphrases_ids:
             try:
                 keyphrases[keyphrase_id].append(token)
@@ -64,7 +62,7 @@ def load_training_relations(sentence: Sentence, negative_sampling=1.0):
     features = []
     labels = []
 
-    keyphrases = find_keyphrase_tokens(sentence, tokens, nlp)
+    keyphrases = find_keyphrase_tokens(sentence, tokens)
     graph = get_dependency_graph(tokens, directed=True)
 
     for relation in sentence.relations:
@@ -87,7 +85,7 @@ def load_testing_relations(sentence: Sentence):
     nlp = nlp_es if lang == 'es' else nlp_en
     tokens = nlp(sentence.text)
 
-    keyphrases = find_keyphrase_tokens(sentence, tokens, nlp)
+    keyphrases = find_keyphrase_tokens(sentence, tokens)
     graph = get_dependency_graph(tokens, directed=True)
 
     features = []

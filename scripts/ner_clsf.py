@@ -1,12 +1,12 @@
 from anntools import Collection
 from pathlib import Path
 
-from ner_utils import get_instances, postprocessing_labels, get_char2idx, train_by_shape, predict_by_shape
+from ner_utils import load_training_entities, load_testing_entities, postprocessing_labels1, get_char2idx, train_by_shape, predict_by_shape
 from base_clsf import BaseClassifier
 import score
 
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, concatenate, SpatialDropout1D
+from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, concatenate
 from tensorflow.keras.losses import categorical_crossentropy
 # from utils import DataGeneratorPredict
 from keras_crf import CRF
@@ -36,8 +36,6 @@ class NERClassifier(BaseClassifier):
         inputs = Input(shape=(None, self.n_features))
         #         outputs = Embedding(input_dim=35179, output_dim=20,
         #                           input_length=self.X_shape[1], mask_zero=True)(inputs)  # 20-dim embedding
-
-
         # input for characters
         char_in = Input(shape=(None, 10,))
         emb_char = TimeDistributed(Embedding(input_dim=254, output_dim=10,
@@ -80,7 +78,7 @@ class NERClassifier(BaseClassifier):
         X_char = []
         self.char2idx = get_char2idx(collection)
         for sentence in collection:
-            feat, chars, label = get_instances(sentence, self.char2idx, labels=True)
+            feat, chars, label = load_training_entities(sentence, self.char2idx)
             features.append(feat)
             labels.append(label)
             X_char.append(np.array(chars))
@@ -91,7 +89,7 @@ class NERClassifier(BaseClassifier):
         features = []
         X_char = []
         for sentence in collection:
-            feat, chars = get_instances(sentence, self.char2idx, False)
+            feat, chars = load_testing_entities(sentence, self.char2idx)
             features.append(feat)
             X_char.append(chars)
         return features, X_char
@@ -115,7 +113,6 @@ class NERClassifier(BaseClassifier):
                 epochs=5)
 
     def test_model(self, collection: Collection) -> Collection:
-        collection = collection.clone()
         features, X_char,  = self.get_features(collection)
         X = self.preprocess_features(features, train=False)
         x_shapes, x_char_shapes, indices = predict_by_shape(X, X_char)
@@ -123,7 +120,7 @@ class NERClassifier(BaseClassifier):
         for x_items, x_chars in zip(x_shapes, x_char_shapes):
             pred.extend(self.model.predict((np.asarray(x_items), np.asarray(x_chars))))
         labels = self.convert_to_label(pred)
-        postprocessing_labels(labels, indices, collection)
+        collection = postprocessing_labels1(labels, indices, collection, self.encoder.classes_)
         return collection
 
     def eval(self, path: Path, submit: Path):
@@ -151,9 +148,9 @@ if __name__ == "__main__":
     collection = Collection().load_dir(Path('2021/ref/training'))
     # dev_set = Collection().load_dir(Path('2021/eval/develop/scenario1-main'))
     ner_clf = NERClassifier()
-    ner_clf.train(collection)
-    ner_clf.save_model('ner')
-    # ner_clf.load_model('ner')
+    # ner_clf.train(collection)
+    # ner_clf.save_model('ner')
+    ner_clf.load_model('ner')
     ner_clf.eval(Path('2021/eval/develop/'), Path('2021/submissions/ner/develop/run1'))
     score.main(Path('2021/eval/develop'),
                Path('2021/submissions/ner/develop'),

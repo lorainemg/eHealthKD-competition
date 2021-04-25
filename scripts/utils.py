@@ -35,40 +35,60 @@ def detect_language(sentence: str) -> str:
     return lang
 
 
-def find_keyphrase_by_span(i: int, j: int, keyphrases: List[Keyphrase], sentence: str, nlp):
+def match_inner(x, y, i, j):
+    """
+    Match whether the token is inside the entity
+    :param x: The start of the entity
+    :param y: The end of the entity
+    :param i: The start of the token
+    :param j: The end of the token
+    """
+    return x <= i and y >= j
+
+
+def match_outside(x, y, i, j):
+    """
+    Match whether the token is outside the entity
+    :param x: The start of the entity
+    :param y: The end of the entity
+    :param i: The start of the token
+    :param j: The end of the token
+    """
+    return i <= x and j >= y
+
+
+def find_keyphrase_by_span(start: int, end: int, keyphrases: List[Keyphrase]):
+    keyphrases_id = []
+    for keyphrase in keyphrases:
+        for x, y in keyphrase.spans:
+            # if the token is contained in the keyphrase or vice versa
+            if match_inner(x, y, start, end) or match_outside(x, y, start, end):
+                keyphrases_id.append(keyphrase.id)
+                break
+    return keyphrases_id
+
+
+def find_match(start: int, end: int, keyphrases: List[Keyphrase]):
     """
     Returns the keyphrase id and the tag of a keyphrase based on the indices that a
     token occupies in a given sentence
     """
-    keyphrases_id = []
-    keyphrases_labels = []
+    labels = []
     for keyphrase in keyphrases:
         for idx, (x, y) in enumerate(keyphrase.spans):
-            word = sentence[x:y]
+            end_span = len(keyphrase.spans) - 1
             # if the token is contained in the keyphrase
-            if x <= i and y >= j:
-                if idx == 0:
-                    keyphrases_id.append(keyphrase.id)
-                    keyphrases_labels.append('B-' + keyphrase.label)
+            if match_inner(x, y, start, end) or match_outside(x, y, start, end):
+                if len(keyphrase.spans) == 1:
+                    labels.append('U-' + keyphrase.label)
+                elif idx == 0:
+                    labels.append('B-' + keyphrase.label)
+                elif idx == end_span:
+                    labels.append('L-' + keyphrase.label)
                 else:
-                    keyphrases_id.append(keyphrase.id)
-                    keyphrases_labels.append('I-' + keyphrase.label)
+                    labels.append('I-' + keyphrase.label)
                 break
-            # if the keyphrase is contained in the token
-            elif i <= x and j >= y:
-                if idx == 0:
-                    tokens = nlp.tokenizer(word)
-                    if i + len(tokens[0]) <= j:
-                        keyphrases_id.append(keyphrase.id)
-                        keyphrases_labels.append('B-' + keyphrase.label)
-                        break
-                keyphrases_id.append(keyphrase.id)
-                keyphrases_labels.append('I-' + keyphrase.label)
-                break
-    if keyphrases_id:
-        return keyphrases_id, keyphrases_labels
-    else:
-        return None, ['O']
+    return labels
 
 
 def get_dependency_graph(tokens: List, directed=False):

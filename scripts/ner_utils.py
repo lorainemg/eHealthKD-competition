@@ -5,10 +5,12 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import spacy
 import networkx as nx
 from anntools import Sentence, Keyphrase, Collection
-from utils import find_keyphrase_by_span, detect_language, nlp_es, nlp_en
-from itertools import chain
+from utils import find_match, detect_language, nlp_es, nlp_en
+from itertools import chain, zip_longest
 import numpy as np
+import re
 
+tag_re = re.compile(r'([BILUOV])-(\w+)')
 sufixes = tuple(nlp_es.Defaults.suffixes) + (r'%', r'\.')
 suffix_re = spacy.util.compile_suffix_regex(sufixes)
 nlp_es.tokenizer.suffix_search = suffix_re.search
@@ -16,6 +18,17 @@ nlp_es.tokenizer.suffix_search = suffix_re.search
 
 ################################ Preprocessing ################################
 # Preprocess the features, getting the training instances (features + labels)
+def select_tag(labels):
+    if not labels:
+        return "O"
+    if len(labels) == 1:
+        return labels[0]
+    entity = tag_re.match(labels[0]).group(2)
+    tags = [tag[0] for tag in labels]
+    tag = "U" if ("U" in tags and "B" not in tags and "L" not in tags) else "V"
+    return f'{tag}-{entity}'
+
+
 def get_features(tokens, char2idx):
     """
     Given a list of tokens returns the features of those tokens.
@@ -44,7 +57,7 @@ def get_features(tokens, char2idx):
     return features, X_char
 
 
-def get_labels(tokens, sentence: Sentence, nlp):
+def get_labels(tokens, sentence: Sentence):
     """
     Given a list of tokens and the sentences containing them returns the labels of those tokens.
     They will be used for training in the first task (Name Entity Recognition)
@@ -56,26 +69,26 @@ def get_labels(tokens, sentence: Sentence, nlp):
         idx = text.index(token.text, i)
         n = len(token.text)
         i = idx + n
-        # instances[(idx, idx + n)] = classify_as_keyphrase(token.text, sentence.keyphrases, idx)
-        _, labels = find_keyphrase_by_span(idx, idx + n, sentence.keyphrases, sentence.text, nlp)
-        instances[(idx, idx + n)] = labels[0]
+        labels = find_match(idx, idx + n, sentence.keyphrases)
+        tag = select_tag(labels)
+        instances[(idx, idx + n)] = tag
     return instances.values()
 
 
-def get_instances(sentence: Sentence, char2idx, labels=True):
-    """
-    Makes all the analysis of the sentence according to spacy.
-    Returns the features and the labels corresponding to those features in the sentence.
-    """
+def load_training_entities(sentence: Sentence, char2idx):
     lang = detect_language(sentence.text)
     nlp = nlp_es if lang == 'es' else nlp_en
     doc = nlp(sentence.text)
     features, X_char = get_features(doc, char2idx)
-    if labels:
-        labels = get_labels(doc, sentence, nlp)
-        return features, X_char, list(labels)
-    else:
-        return features, X_char
+    labels = get_labels(doc, sentence)
+    return features, X_char, list(labels)
+
+
+def load_testing_entities(sentence: Sentence, char2idx):
+    lang = detect_language(sentence.text)
+    nlp = nlp_es if lang == 'es' else nlp_en
+    doc = nlp(sentence.text)
+    return get_features(doc, char2idx)
 
 
 def get_char2idx(collection: Collection):
@@ -175,7 +188,7 @@ def create_keyphrase(sent, label, next_id, multiple):
 def get_label(label, pred_label, multiple, sent, next_id, word):
     if label not in pred_label:
         return False, next_id, multiple
-    if pred_label == 'B-' + label:
+    if pred_label in ['B-' + label, 'U-' + label]:
         next_id = create_keyphrase(sent, label, next_id, multiple)
         multiple = []
     try:
@@ -186,3 +199,126 @@ def get_label(label, pred_label, multiple, sent, next_id, word):
     span = i, i + len(word)
     multiple.append(span)
     return True, next_id, multiple
+
+
+# ---------------------------------------- #
+def postprocessing_labels1(labels, indices, sentences, classes):
+    next_id = 0
+    new_sentences = []
+    for sent_labels, index in zip(labels, indices):
+        sent = sentences[index]
+        lang = detect_language(sent.text)
+        tokens = nlp_en.tokenizer(sent.text) if lang == 'en' else nlp_es.tokenizer(sent.text)
+        new_sentences.append(make_sentence(tokens, sent_labels, classes))
+    return Collection(new_sentences)
+
+
+def make_sentence(tokens, labels, classes):
+    sentence = Sentence(tokens.text)
+
+    entities = set(l[2:] for l in classes if l != 'O')
+    for entity in entities:
+        bilouv = []
+        for tag in labels:
+            if tag.endswith(entity):
+                bilouv.append(tag[0])
+            else:
+                bilouv.append('O')
+
+        spans = from_bilouv(bilouv, tokens)
+        sentence.keyphrases.extend(Keyphrase(sentence, entity, i, sp) for i, sp in enumerate(spans))
+    return sentence
+
+
+def from_bilouv(bilouv, tokens):
+    entities = [x for x in discontinuous_match(bilouv, tokens)]
+    for i, (tag, word) in enumerate(zip(bilouv, tokens)):
+        if tag == 'U':
+            entities.append([word])
+            bilouv[i] = 'O'
+        elif tag == 'V':
+            bilouv[i] = 'I'
+
+    multiple = []
+    for label, word in zip(bilouv, tokens):
+        if label == 'L':
+            entities.append(multiple + [word])
+            multiple = []
+        if label == 'B':
+            if multiple:
+                entities.append(multiple)
+                multiple = []
+            multiple.append(word)
+        elif label != 'O':
+            multiple.append(word)
+    if len(multiple) > 0:
+        entities.append(multiple)
+    return [[(tok.idx, tok.idx + len(tok)) for tok in tokens] for tokens in entities]
+
+
+def discontinuous_match(bilouv, tokens):
+    entities = []
+    for i, tag in enumerate(bilouv):
+        if tag != "V":
+            continue
+        for entity_ids in _full_overlap(bilouv, list(range(len(tokens))), i):
+            entity = []
+            for idx in entity_ids:
+                entity.append(tokens[idx])
+                bilouv[idx] = "O"
+            entities.append(entity)
+    return entities
+
+
+def _full_overlap(bilouv, sentence, index):
+    left = _right_to_left_overlap(bilouv[:index + 1], sentence[:index + 1])
+    right = _left_to_right_overlap(bilouv[index:], sentence[index:])
+
+    full = []
+    for l, r in zip_longest(left, right, fillvalue=[]):
+        new = l + r[1:] if len(l) > len(r) else l[:-1] + r
+        full.append(new)
+    return full
+
+
+def _left_to_right_overlap(biluov, sentence):
+    return _build_overlap(biluov, sentence, "L")
+
+
+def _right_to_left_overlap(biluov, sentence):
+    inverse = _build_overlap(reversed(biluov), reversed(sentence), "B")
+    for x in inverse:
+        x.reverse()
+    return inverse
+
+
+def _build_overlap(biluov, sentence, finisher):
+    prefix = []
+    complete = []
+
+    one_shot = zip(biluov, sentence)
+    tag, word = next(one_shot)
+
+    try:
+        while tag in ("V", "O"):
+            if tag == "V":
+                prefix.append(word)
+            tag, word = next(one_shot)
+
+        on_build = []
+        while tag in ("O", "I", "U", finisher):
+            if tag == "I":
+                on_build.append(word)
+            elif tag == finisher:
+                complete.append(prefix + on_build + [word])
+                on_build = []
+            elif tag == "U":
+                complete.append([word])
+            tag, word = next(one_shot)
+    except StopIteration:
+        pass
+
+    if len(complete) == 1:
+        complete.append(prefix)
+
+    return complete
