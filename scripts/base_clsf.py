@@ -74,8 +74,8 @@ class BaseClassifier:
     def get_weights(self, labels):
         unique_classes = np.array(self.encoder.classes_)
         labels = np.concatenate(labels)
-        weights = compute_class_weight('balanced', classes=unique_classes, y=labels)
-        self.weights = {i: v for i, v in enumerate(weights)}
+        self.weights = compute_class_weight('balanced', classes=unique_classes, y=labels)
+        # self.weights = {i: v for i, v in enumerate(weights)}
 
     # def _padding_dicts(self, X):
     #     '''

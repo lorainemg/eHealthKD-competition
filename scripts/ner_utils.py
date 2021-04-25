@@ -204,18 +204,14 @@ def get_label(label, pred_label, multiple, sent, next_id, word):
 # ---------------------------------------- #
 def postprocessing_labels1(labels, indices, sentences, classes):
     next_id = 0
-    new_sentences = []
     for sent_labels, index in zip(labels, indices):
         sent = sentences[index]
         lang = detect_language(sent.text)
         tokens = nlp_en.tokenizer(sent.text) if lang == 'en' else nlp_es.tokenizer(sent.text)
-        new_sentences.append(make_sentence(tokens, sent_labels, classes))
-    return Collection(new_sentences)
+        next_id = make_sentence(tokens, sent_labels, classes, sent, next_id)
 
 
-def make_sentence(tokens, labels, classes):
-    sentence = Sentence(tokens.text)
-
+def make_sentence(tokens, labels, classes, sentence, last_idx):
     entities = set(l[2:] for l in classes if l != 'O')
     for entity in entities:
         bilouv = []
@@ -226,8 +222,9 @@ def make_sentence(tokens, labels, classes):
                 bilouv.append('O')
 
         spans = from_bilouv(bilouv, tokens)
-        sentence.keyphrases.extend(Keyphrase(sentence, entity, i, sp) for i, sp in enumerate(spans))
-    return sentence
+        sentence.keyphrases.extend(Keyphrase(sentence, entity, last_idx + i, sp) for i, sp in enumerate(spans))
+        last_idx += len(spans)
+    return last_idx
 
 
 def from_bilouv(bilouv, tokens):

@@ -70,7 +70,7 @@ class REClassifier(BaseClassifier):
         features = []
         labels = []
         for sentence in collection:
-            feat, label = load_training_relations(sentence, 0.6)
+            feat, label = load_training_relations(sentence, 0.8)
             features.append(feat)
             labels.append(label)
         return features, labels

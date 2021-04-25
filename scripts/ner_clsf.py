@@ -1,14 +1,15 @@
 from anntools import Collection
 from pathlib import Path
 
-from ner_utils import load_training_entities, load_testing_entities, postprocessing_labels1, get_char2idx, train_by_shape, predict_by_shape
+from ner_utils import load_training_entities, load_testing_entities, postprocessing_labels1, get_char2idx, \
+    train_by_shape, predict_by_shape
 from base_clsf import BaseClassifier
 import score
 
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, concatenate
+from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, concatenate, MaxPooling1D
 from tensorflow.keras.losses import categorical_crossentropy
-# from utils import DataGeneratorPredict
+from utils import weighted_loss
 from keras_crf import CRF
 # from keras_crf import CRF
 import numpy as np
@@ -22,12 +23,12 @@ class NERClassifier(BaseClassifier):
         """
         Wrapper function where of the process of training is done
         """
-        features, X_char,  labels = self.get_sentences(collection)
+        features, X_char, labels = self.get_sentences(collection)
         X, y = self.preprocessing(features, labels)
-        self.get_bi_lstm_model('concat')
+        self.get_model()
         return self.fit_model((X, X_char), y)
 
-    def get_bi_lstm_model(self, mode: str):
+    def get_model(self):
         """
         Construct the neural network architecture using the keras functional api.
         `mode` is the mode where the lstm are joined in the bidirectional layer, (its not currently being used)
@@ -46,15 +47,17 @@ class NERClassifier(BaseClassifier):
         # main LSTM
         x = concatenate([inputs, char_enc])
         x = Bidirectional(LSTM(units=32, return_sequences=True,
-                                     recurrent_dropout=0.1))(x)  # variational biLSTM
-        # outputs = Bidirectional(LSTM(units=512, return_sequences=True,
-        #                    recurrent_dropout=0.2, dropout=0.2))(outputs)
+                               recurrent_dropout=0.1))(x)  # variational biLSTM
+        x = Bidirectional(LSTM(units=32, return_sequences=True,
+                               recurrent_dropout=0.2, dropout=0.2))(x)
+        # x = MaxPooling1D()(x)
         outputs = TimeDistributed(Dense(self.n_labels, activation="softmax"))(x)  # a dense layer as suggested by neuralNer
         # crf = CRF(self.n_labels)  # CRF layer
         # outputs = crf(outputs)  # output
 
         model = Model(inputs=[inputs, char_in], outputs=outputs)
         model.compile(optimizer="adam", metrics=self.metrics,
+                        # loss=weighted_loss(categorical_crossentropy, self.weights))
                       loss=categorical_crossentropy)
         model.summary()
         self.model = model
@@ -66,7 +69,7 @@ class NERClassifier(BaseClassifier):
         """
         X = self.preprocess_features(features)
         y = self.preprocess_labels(labels)
-        # self.get_weights(labels)
+        self.get_weights(labels)
         return X, y
 
     def get_sentences(self, collection: Collection):
@@ -113,14 +116,15 @@ class NERClassifier(BaseClassifier):
                 epochs=5)
 
     def test_model(self, collection: Collection) -> Collection:
-        features, X_char,  = self.get_features(collection)
+        collection = collection.clone()
+        features, X_char, = self.get_features(collection)
         X = self.preprocess_features(features, train=False)
         x_shapes, x_char_shapes, indices = predict_by_shape(X, X_char)
         pred = []
         for x_items, x_chars in zip(x_shapes, x_char_shapes):
             pred.extend(self.model.predict((np.asarray(x_items), np.asarray(x_chars))))
         labels = self.convert_to_label(pred)
-        collection = postprocessing_labels1(labels, indices, collection, self.encoder.classes_)
+        postprocessing_labels1(labels, indices, collection, self.encoder.classes_)
         return collection
 
     def eval(self, path: Path, submit: Path):
@@ -148,9 +152,9 @@ if __name__ == "__main__":
     collection = Collection().load_dir(Path('2021/ref/training'))
     # dev_set = Collection().load_dir(Path('2021/eval/develop/scenario1-main'))
     ner_clf = NERClassifier()
-    # ner_clf.train(collection)
-    # ner_clf.save_model('ner')
-    ner_clf.load_model('ner')
+    ner_clf.train(collection)
+    ner_clf.save_model('ner')
+    # ner_clf.load_model('ner')
     ner_clf.eval(Path('2021/eval/develop/'), Path('2021/submissions/ner/develop/run1'))
     score.main(Path('2021/eval/develop'),
                Path('2021/submissions/ner/develop'),
