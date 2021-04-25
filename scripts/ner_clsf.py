@@ -2,10 +2,11 @@ from anntools import Collection
 from pathlib import Path
 
 from ner_utils import load_training_entities, load_testing_entities, postprocessing_labels1, get_char2idx, \
-    train_by_shape, predict_by_shape
+    train_by_shape, predict_by_shape, convert_to_str_label
 from base_clsf import BaseClassifier
 import score
 
+from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, concatenate, MaxPooling1D
 from tensorflow.keras.losses import categorical_crossentropy
@@ -13,20 +14,25 @@ from utils import weighted_loss
 from keras_crf import CRF
 # from keras_crf import CRF
 import numpy as np
-import json
-
+import json, pickle
 
 class NERClassifier(BaseClassifier):
     """Classifier for the name entity resolution task"""
+    def __init__(self):
+        BaseClassifier.__init__(self)
+        self.n_tags = 6
+        self.n_entities = 4
+        self.encoder_tags = LabelEncoder()
+        self.encoder_entities = LabelEncoder()
 
     def train(self, collection: Collection):
         """
         Wrapper function where of the process of training is done
         """
-        features, X_char, labels = self.get_sentences(collection)
-        X, y = self.preprocessing(features, labels)
+        features, X_char, tags, entities = self.get_sentences(collection)
+        X, (y_tags, y_entities) = self.preprocessing(features, (tags, entities))
         self.get_model()
-        return self.fit_model((X, X_char), y)
+        return self.fit_model((X, X_char), (y_tags, y_entities))
 
     def get_model(self):
         """
@@ -51,11 +57,12 @@ class NERClassifier(BaseClassifier):
         x = Bidirectional(LSTM(units=32, return_sequences=True,
                                recurrent_dropout=0.2, dropout=0.2))(x)
         # x = MaxPooling1D()(x)
-        outputs = TimeDistributed(Dense(self.n_labels, activation="softmax"))(x)  # a dense layer as suggested by neuralNer
+        out1 = TimeDistributed(Dense(self.n_tags, activation="softmax"))(x)  # a dense layer as suggested by neuralNer
+        out2 = TimeDistributed(Dense(self.n_entities, activation="softmax"))(x)  # a dense layer as suggested by neuralNer
         # crf = CRF(self.n_labels)  # CRF layer
         # outputs = crf(outputs)  # output
 
-        model = Model(inputs=[inputs, char_in], outputs=outputs)
+        model = Model(inputs=[inputs, char_in], outputs=(out1, out2))
         model.compile(optimizer="adam", metrics=self.metrics,
                         # loss=weighted_loss(categorical_crossentropy, self.weights))
                       loss=categorical_crossentropy)
@@ -67,25 +74,31 @@ class NERClassifier(BaseClassifier):
         Handles the preprocessing step. The features and labels are converted in vectors
             and their shape is adjusted.
         """
+        tags, entities = labels
         X = self.preprocess_features(features)
-        y = self.preprocess_labels(labels)
-        self.get_weights(labels)
-        return X, y
+        y_tags = self.preprocess_labels(tags, self.encoder_tags)
+        self.n_tags = y_tags[0].shape[-1]
+        y_entities = self.preprocess_labels(entities, self.encoder_entities)
+        self.n_entities = y_entities[0].shape[-1]
+        # self.get_weights(labels)
+        return X, (y_tags, y_entities)
 
     def get_sentences(self, collection: Collection):
         """
         Giving a collection, the features and labels of its sentences are returned
         """
         features = []
-        labels = []
+        tags = []
+        entities = []
         X_char = []
         self.char2idx = get_char2idx(collection)
         for sentence in collection:
-            feat, chars, label = load_training_entities(sentence, self.char2idx)
+            feat, chars, tag, entity = load_training_entities(sentence, self.char2idx)
             features.append(feat)
-            labels.append(label)
+            tags.append(tag)
+            entities.append(entity)
             X_char.append(np.array(chars))
-        return features, X_char, labels
+        return features, X_char, tags, entities
 
     def get_features(self, collection: Collection):
         """Giving a collection, the features of its sentences are returned"""
@@ -105,14 +118,15 @@ class NERClassifier(BaseClassifier):
         #             validation_split=0.2, verbose=1)
         # hist = self.model.fit(MyBatchGenerator(X, y, batch_size=30), epochs=5)
         X, X_char = X
+        y_tags, y_entities = y
         num_examples = len(X)
-        steps_per_epoch = num_examples / 5
+
         # self.model.fit(self.generator(X, y), steps_per_epoch=steps_per_epoch, epochs=5)
-        x_shapes, x_char_shapes, y_shapes = train_by_shape(X, y, X_char)
+        x_shapes, x_char_shapes, yt_shapes, ye_shapes = train_by_shape(X, y_tags, y_entities, X_char)
         for shape in x_shapes:
             self.model.fit(
                 (np.asarray(x_shapes[shape]), np.asarray(x_char_shapes[shape])),
-                np.asarray(y_shapes[shape]),
+                (np.asarray(yt_shapes[shape]), np.asarray(ye_shapes[shape])),
                 epochs=5)
 
     def test_model(self, collection: Collection) -> Collection:
@@ -120,11 +134,18 @@ class NERClassifier(BaseClassifier):
         features, X_char, = self.get_features(collection)
         X = self.preprocess_features(features, train=False)
         x_shapes, x_char_shapes, indices = predict_by_shape(X, X_char)
-        pred = []
+        pred_tags = []
+        pred_entities = []
         for x_items, x_chars in zip(x_shapes, x_char_shapes):
-            pred.extend(self.model.predict((np.asarray(x_items), np.asarray(x_chars))))
-        labels = self.convert_to_label(pred)
-        postprocessing_labels1(labels, indices, collection, self.encoder.classes_)
+            pt, pe = self.model.predict((np.asarray(x_items), np.asarray(x_chars)))
+            pred_tags.extend(pt)
+            pred_entities.extend(pe)
+        labels_tags = self.convert_to_label(pred_tags, self.encoder_tags)
+        labels_entities = self.convert_to_label(pred_entities, self.encoder_entities)
+        labels = convert_to_str_label(labels_tags, labels_entities)
+        entities = self.encoder_entities.classes_.tolist()
+        entities.remove('None')
+        postprocessing_labels1(labels, indices, collection, entities)
         return collection
 
     def eval(self, path: Path, submit: Path):
@@ -142,19 +163,23 @@ class NERClassifier(BaseClassifier):
     def save_model(self, name):
         BaseClassifier.save_model(self, name)
         json.dump(self.char2idx, open(fr'resources/{name}_charmap.json', 'w'))
+        pickle.dump(self.encoder_tags, open(fr'resources/{name}_tag_encoder.pkl', 'wb'))
+        pickle.dump(self.encoder_entities, open(fr'resources/{name}_entity_encoder.pkl', 'wb'))
 
     def load_model(self, name):
         BaseClassifier.load_model(self, name)
         self.char2idx = json.load(open(fr'resources/{name}_charmap.json', 'r'))
+        self.encoder_tags = pickle.load(open(fr'resources/{name}_tag_encoder.pkl', 'rb'))
+        self.encoder_entities = pickle.load(open(fr'resources/{name}_entity_encoder.pkl', 'rb'))
 
 
 if __name__ == "__main__":
     collection = Collection().load_dir(Path('2021/ref/training'))
     # dev_set = Collection().load_dir(Path('2021/eval/develop/scenario1-main'))
     ner_clf = NERClassifier()
-    ner_clf.train(collection)
-    ner_clf.save_model('ner')
-    # ner_clf.load_model('ner')
+    # ner_clf.train(collection)
+    # ner_clf.save_model('ner')
+    ner_clf.load_model('ner')
     ner_clf.eval(Path('2021/eval/develop/'), Path('2021/submissions/ner/develop/run1'))
     score.main(Path('2021/eval/develop'),
                Path('2021/submissions/ner/develop'),

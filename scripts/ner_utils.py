@@ -20,13 +20,13 @@ nlp_es.tokenizer.suffix_search = suffix_re.search
 # Preprocess the features, getting the training instances (features + labels)
 def select_tag(labels):
     if not labels:
-        return "O"
+        return "O", 'None'
+    tag, entity = tag_re.match(labels[0]).groups()
     if len(labels) == 1:
-        return labels[0]
-    entity = tag_re.match(labels[0]).group(2)
+        return tag, entity
     tags = [tag[0] for tag in labels]
     tag = "U" if ("U" in tags and "B" not in tags and "L" not in tags) else "V"
-    return f'{tag}-{entity}'
+    return tag, entity
 
 
 def get_features(tokens, char2idx):
@@ -64,15 +64,18 @@ def get_labels(tokens, sentence: Sentence):
     """
     text = sentence.text
     instances = {}
+    tags = {}
+    entities = {}
     i = 0
     for token in tokens:
         idx = text.index(token.text, i)
         n = len(token.text)
         i = idx + n
         labels = find_match(idx, idx + n, sentence.keyphrases)
-        tag = select_tag(labels)
-        instances[(idx, idx + n)] = tag
-    return instances.values()
+        tag, entity = select_tag(labels)
+        tags[(idx, idx + n)] = tag
+        entities[(idx, idx + n)] = entity
+    return tags.values(), entities.values()
 
 
 def load_training_entities(sentence: Sentence, char2idx):
@@ -80,8 +83,8 @@ def load_training_entities(sentence: Sentence, char2idx):
     nlp = nlp_es if lang == 'es' else nlp_en
     doc = nlp(sentence.text)
     features, X_char = get_features(doc, char2idx)
-    labels = get_labels(doc, sentence)
-    return features, X_char, list(labels)
+    tags, entities = get_labels(doc, sentence)
+    return features, X_char, list(tags), list(entities)
 
 
 def load_testing_entities(sentence: Sentence, char2idx):
@@ -104,7 +107,7 @@ def get_char2idx(collection: Collection):
     return char2idx
 
 
-def train_by_shape(X, y, X_char):
+def train_by_shape(X, y_tags, y_ents, X_char):
     """
     Separates the features and labels by its shape
     :param X: Word-features
@@ -113,18 +116,21 @@ def train_by_shape(X, y, X_char):
     :return: 3 dictionaries of sublists of the parameters separated by there size
     """
     x_shapes = {}
-    y_shapes = {}
+    yt_shapes = {}
+    ye_shapes = {}
     x_char_shapes = {}
-    for itemX, X_char, itemY in zip(X, X_char, y):
+    for itemX, X_char, y_t, y_e in zip(X, X_char, y_tags, y_ents):
         try:
             x_shapes[itemX.shape[0]].append(itemX)
             x_char_shapes[itemX.shape[0]].append(X_char)
-            y_shapes[itemX.shape[0]].append(itemY)
-        except:
+            yt_shapes[itemX.shape[0]].append(y_t)
+            ye_shapes[itemX.shape[0]].append(y_e)
+        except KeyError:
             x_shapes[itemX.shape[0]] = [itemX]  # initially a list, because we're going to append items
             x_char_shapes[itemX.shape[0]] = [X_char]
-            y_shapes[itemX.shape[0]] = [itemY]
-    return x_shapes, x_char_shapes, y_shapes
+            yt_shapes[itemX.shape[0]] = [y_t]
+            ye_shapes[itemX.shape[0]] = [y_e]
+    return x_shapes, x_char_shapes, yt_shapes, ye_shapes
 
 
 def predict_by_shape(X, X_char):
@@ -142,7 +148,7 @@ def predict_by_shape(X, X_char):
             x_char_shapes[itemX.shape[0]].append(X_char)
             x_shapes[len(itemX)].append(itemX)
             indices[len(itemX)].append(i)
-        except:
+        except KeyError:
             x_shapes[len(itemX)] = [itemX]  # initially a list, because we're going to append items
             x_char_shapes[itemX.shape[0]] = [X_char]
             indices[len(itemX)] = [i]
@@ -202,17 +208,28 @@ def get_label(label, pred_label, multiple, sent, next_id, word):
 
 
 # ---------------------------------------- #
-def postprocessing_labels1(labels, indices, sentences, classes):
+def convert_to_str_label(labels_tags, labels_entities):
+    labels = []
+    for tag_sent, ent_sent in zip(labels_tags, labels_entities):
+        lab_sent = []
+        for tag, ent in zip(tag_sent, ent_sent):
+            if ent == 'None':
+                lab_sent.append(f'{tag}')
+            else:
+                lab_sent.append(f'{tag}-{ent}')
+        labels.append(lab_sent)
+    return labels
+
+def postprocessing_labels1(labels, indices, sentences, entities):
     next_id = 0
     for sent_labels, index in zip(labels, indices):
         sent = sentences[index]
         lang = detect_language(sent.text)
         tokens = nlp_en.tokenizer(sent.text) if lang == 'en' else nlp_es.tokenizer(sent.text)
-        next_id = make_sentence(tokens, sent_labels, classes, sent, next_id)
+        next_id = make_sentence(tokens, sent_labels, entities, sent, next_id)
 
 
-def make_sentence(tokens, labels, classes, sentence, last_idx):
-    entities = set(l[2:] for l in classes if l != 'O')
+def make_sentence(tokens, labels, entities, sentence, last_idx):
     for entity in entities:
         bilouv = []
         for tag in labels:

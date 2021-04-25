@@ -40,6 +40,9 @@ class BaseClassifier:
             metrics.AUC(name='auc'),
             metrics.AUC(name='prc', curve='PR'),  # precision-recall curve
         ]
+        self.n_labels = None
+        self.n_features = None
+
 
     def preprocess_features(self, features, train=True):
         """
@@ -56,18 +59,19 @@ class BaseClassifier:
         #         X = X.reshape(1921, 15, X.shape[1])
         return X
 
-    def preprocess_labels(self, labels):
+    def preprocess_labels(self, labels, encoder=None):
         """
         The labels are converted in vectors and their shape is adjusted.
         """
+        if encoder is None:
+            encoder = self.encoder
         # As with DictVectorizer, all the labels are fit a\nd transformed
-        self.encoder.fit(list(itertools.chain(*labels)))
-        y = [self.encoder.transform(label) for label in labels]
-        # the padding is done
-        # y = pad_sequences(maxlen=self.max_len, sequences=y, padding="post", value=self.encoder.transform([null_value])[0])
-        #         y = y.reshape(1921, 15, y.shape[1])
-        # the labels are one-hot encoded, i.e, the number are represented in arrays.
-        y = [to_categorical(elem, num_classes=len(self.encoder.classes_)) for elem in y]
+        encoder.fit(list(itertools.chain(*labels)))
+        y = [encoder.transform(label) for label in labels]
+        # the padding is done y = pad_sequences(maxlen=self.max_len, sequences=y, padding="post",
+        # value=self.encoder.transform([null_value])[0]) y = y.reshape(1921, 15, y.shape[1]) the labels are one-hot
+        # encoded, i.e, the number are represented in arrays.
+        y = [to_categorical(elem, num_classes=len(encoder.classes_)) for elem in y]
         self.n_labels = y[0].shape[-1]
         return y
 
@@ -104,13 +108,15 @@ class BaseClassifier:
         self.vectorizer = pickle.load(open(fr"resources/{name}_vectorizer.pkl", 'rb'))
         self.encoder = pickle.load(open(fr"resources/{name}_encoder.pkl", 'rb'))
 
-    def convert_to_label(self, pred):
+    def convert_to_label(self, pred, encoder=None):
         """Converts the predictions of the model in strings labels"""
+        if encoder is None:
+            encoder = self.encoder
         out = []
         for pred_i in pred:
             out_i = []
             for p in pred_i:
                 p_i = np.argmax(p)
-                out_i.append(self.encoder.inverse_transform([p_i])[0])
+                out_i.append(encoder.inverse_transform([p_i])[0])
             out.append(out_i)
         return out
