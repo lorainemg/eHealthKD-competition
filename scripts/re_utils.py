@@ -109,7 +109,7 @@ def load_testing_relations(sentence: Sentence):
     return features, feat_path
 
 
-def train_by_shape(X, X_dep_feat, y):
+def train_by_shape(X, X_dep_feat, y, my_embedding):
     """
     Separates the features and labels by its shape
     :param X: Word-features
@@ -119,19 +119,22 @@ def train_by_shape(X, X_dep_feat, y):
     x_shapes = {}
     y_shapes = {}
     x_dep_shapes = {}
-    for itemX, itemXDep, itemY in zip(X, X_dep_feat, y):
+    my_embedding_shapes = {}
+    for itemX, itemXDep, itemY, itemZ in zip(X, X_dep_feat, y, my_embedding):
         try:
             x_shapes[itemX.shape[0]].append(itemX)
             y_shapes[itemX.shape[0]].append(itemY)
             x_dep_shapes[itemX.shape[0]].append(itemXDep)
+            my_embedding_shapes[itemX.shape[0]].append(itemZ)
         except KeyError:
             x_shapes[itemX.shape[0]] = [itemX]  # initially a list, because we're going to append items
             y_shapes[itemX.shape[0]] = [itemY]
             x_dep_shapes[itemX.shape[0]] = [itemXDep]
+            my_embedding_shapes[itemX.shape[0]]= [itemZ]
     return x_shapes, x_dep_shapes, y_shapes
 
 
-def predict_by_shape(X, X_dep_feat):
+def predict_by_shape(X, X_dep_feat, my_embedding):
     """
     Separates the features by its shape
     :param X: Word-features
@@ -140,16 +143,19 @@ def predict_by_shape(X, X_dep_feat):
     x_shapes = {}
     indices = {}
     x_dep_shapes = {}
-    for i, (itemX, itemXDep) in enumerate(zip(X, X_dep_feat)):
+    my_embedding_shapes = {}
+    for i, (itemX, itemXDep, itemZ) in enumerate(zip(X, X_dep_feat, my_embedding)):
         try:
             x_shapes[len(itemX)].append(itemX)
             indices[len(itemX)].append(i)
             x_dep_shapes[itemX.shape[0]].append(itemXDep)
+            my_embedding_shapes[len(itemX)].append(itemZ)
         except KeyError:
             x_shapes[len(itemX)] = [itemX]  # initially a list, because we're going to append items
             indices[len(itemX)] = [i]
             x_dep_shapes[itemX.shape[0]] = [itemXDep]
-    return x_shapes.values(), x_dep_shapes.values(), chain(*indices.values())
+            my_embedding_shapes[len(itemX)] =[itemZ]
+    return x_shapes.values(), x_dep_shapes.values(), my_embedding_shapes, chain(*indices.values())
 
 
 ################################ Postprocessing ################################

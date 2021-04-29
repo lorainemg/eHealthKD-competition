@@ -107,7 +107,7 @@ def get_char2idx(collection: Collection):
     return char2idx
 
 
-def train_by_shape(X, y_tags, y_ents, X_char):
+def train_by_shape(X, y_tags, y_ents, X_char, my_embedding):
     """
     Separates the features and labels by its shape
     :param X: Word-features
@@ -119,21 +119,24 @@ def train_by_shape(X, y_tags, y_ents, X_char):
     yt_shapes = {}
     ye_shapes = {}
     x_char_shapes = {}
-    for itemX, X_char, y_t, y_e in zip(X, X_char, y_tags, y_ents):
+    my_embedding_shapes = {}
+    for itemX, X_char, y_t, y_e, itemZ in zip(X, X_char, y_tags, y_ents, my_embedding):
         try:
             x_shapes[itemX.shape[0]].append(itemX)
             x_char_shapes[itemX.shape[0]].append(X_char)
             yt_shapes[itemX.shape[0]].append(y_t)
             ye_shapes[itemX.shape[0]].append(y_e)
+            my_embedding_shapes[itemX.shape[0]].append(itemZ)
         except KeyError:
             x_shapes[itemX.shape[0]] = [itemX]  # initially a list, because we're going to append items
             x_char_shapes[itemX.shape[0]] = [X_char]
             yt_shapes[itemX.shape[0]] = [y_t]
             ye_shapes[itemX.shape[0]] = [y_e]
-    return x_shapes, x_char_shapes, yt_shapes, ye_shapes
+            my_embedding_shapes[itemX.shape[0]] = [itemZ]
+    return x_shapes, x_char_shapes, my_embedding_shapes, yt_shapes, ye_shapes
 
 
-def predict_by_shape(X, X_char):
+def predict_by_shape(X, X_char, my_embedding):
     """
     Separates the features by its shape
     :param X: Word-features
@@ -143,16 +146,19 @@ def predict_by_shape(X, X_char):
     x_char_shapes = {}
     x_shapes = {}
     indices = {}
-    for i, (itemX, X_char) in enumerate(zip(X, X_char)):
+    my_embedding_shapes = {}
+    for i, (itemX, X_char, itemZ) in enumerate(zip(X, X_char, my_embedding)):
         try:
             x_char_shapes[itemX.shape[0]].append(X_char)
             x_shapes[len(itemX)].append(itemX)
             indices[len(itemX)].append(i)
+            my_embedding_shapes[len(itemX)].append(itemZ)
         except KeyError:
             x_shapes[len(itemX)] = [itemX]  # initially a list, because we're going to append items
             x_char_shapes[itemX.shape[0]] = [X_char]
             indices[len(itemX)] = [i]
-    return x_shapes.values(), x_char_shapes.values(), chain(*indices.values())
+            my_embedding_shapes[len(itemX)] = [itemZ]
+    return x_shapes.values(), x_char_shapes.values(), my_embedding_shapes.values(), chain(*indices.values())
 
 
 ################################ Postprocessing ################################

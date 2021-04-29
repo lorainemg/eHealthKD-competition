@@ -13,8 +13,9 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Masking, concatenate
 from tensorflow.keras.losses import categorical_crossentropy
-from utils import weighted_loss
+from utils import weighted_loss, detect_language, nlp_es, nlp_en
 import numpy as np
+import fasttext
 from tensorflow_addons.metrics import FBetaScore
 
 
@@ -23,15 +24,16 @@ class REClassifier(BaseClassifier):
     def __init__(self):
         BaseClassifier.__init__(self)
         self.path_encoder = LabelEncoder()
+        self.ScieloSku = fasttext.load_model("./Scielo_skipgram_uncased.bin")
 
     def train(self, collection: Collection):
         """
         Wrapper function where of the process of training is done
         """
-        features, path_features, labels = self.get_sentences(collection)
+        features, path_features, my_embedding, labels = self.get_sentences(collection)
         X, X_dep, y = self.preprocessing(features, path_features, labels)
         self.get_model()
-        return self.fit_model((X, X_dep), y)
+        return self.fit_model((X, X_dep, my_embedding), y)
 
     def get_model(self):
         """
@@ -39,6 +41,7 @@ class REClassifier(BaseClassifier):
         `mode` is the mode where the lstm are joined in the bidirectional layer, (its not currently being used)
         """
         inputs = Input(shape=(None, self.n_features))
+        emb_in = Input(shape=(None, 300))
         dep_input = Input(shape=(None, 10))
         #         outputs = Embedding(input_dim=35179, output_dim=20,
         #                           input_length=self.X_shape[1], mask_zero=True)(inputs)  # 20-dim embedding
@@ -46,7 +49,7 @@ class REClassifier(BaseClassifier):
         x = Bidirectional(LSTM(units=32, return_sequences=True,
                                      recurrent_dropout=0.1))(x)
 
-        x = concatenate([inputs, x])
+        x = concatenate([inputs, x, emb_in])
         x = Bidirectional(LSTM(units=32, return_sequences=True,
                                      recurrent_dropout=0.1))(x)  # variational biLSTM
         # outputs = Bidirectional(LSTM(units=512, return_sequences=True,
@@ -55,7 +58,7 @@ class REClassifier(BaseClassifier):
             x)  # a dense layer as suggested by neuralNer
         #         crf = CRF(8)  # CRF layer
         #         out = crf(outputs)  # output
-        model = Model(inputs=(inputs, dep_input), outputs=outputs)
+        model = Model(inputs=(inputs, dep_input, emb_in), outputs=outputs)
         model.compile(optimizer="adam", metrics=self.metrics,
                     #   loss=weighted_loss(categorical_crossentropy, self.weights))
                       loss=categorical_crossentropy)
@@ -77,6 +80,20 @@ class REClassifier(BaseClassifier):
         # self.y_shape = y.shape
         return X, X_dep, y
 
+    def get_vec(self,sentence):
+        lang = detect_language(sentence.text)
+        if lang == 'es' :
+            nlp = nlp_es
+        else:
+            nlp = nlp_en
+
+        tokens = nlp.tokenizer(sentence)
+        r = []
+        for t in tokens:
+            r.append(self.ScieloSku.get_word_vector(t.text))
+
+        return r
+
     def preprocess_path_feat(self, path_features):
         X_dep = []
         flat_path_feat = [['None']]
@@ -96,22 +113,26 @@ class REClassifier(BaseClassifier):
         features = []
         labels = []
         path_features = []
+        my_embedding = []
         for sentence in collection:
             feat, path_feat, label = load_training_relations(sentence, 0.5)
             features.append(feat)
             labels.append(label)
             path_features.append(path_feat)
-        return features, path_features, labels
+            my_embedding.append(self.get_vec(sentence))
+        return features, path_features, my_embedding, labels
 
     def get_features(self, collection: Collection):
         """Giving a collection, the features of its sentences are returned"""
         features = []
         path_features = []
+        my_embedding = []
         for sentence in collection:
             feat, path_feat = load_testing_relations(sentence)
             features.append(feat)
             path_features.append(path_feat)
-        return features, path_features
+            my_embedding.append(self.get_vec(sentence))
+        return features, path_features, my_embedding
 
     def fit_model(self, X, y, plot=False):
         """
@@ -120,11 +141,11 @@ class REClassifier(BaseClassifier):
         # hist = self.model.fit(X, y, batch_size=32, epochs=5,
         #             validation_split=0.2, verbose=1)
         # hist = self.model.fit(MyBatchGenerator(X, y, batch_size=30), epochs=5)
-        X, X_feat = X
+        X, X_feat, my_embedding = X
         num_examples = len(X)
         steps_per_epoch = num_examples / 5
         # self.model.fit(self.generator(X, y), steps_per_epoch=steps_per_epoch, epochs=5)
-        x_shapes, x_dep_shapes, y_shapes = train_by_shape(X, X_feat, y)
+        x_shapes, x_dep_shapes, my_embedding_shapes, y_shapes = train_by_shape(X, X_feat, y, my_embedding)
         for shape in x_shapes:
             self.model.fit(
                 (np.asarray(x_shapes[shape]), np.asarray(x_dep_shapes[shape])),
@@ -132,14 +153,14 @@ class REClassifier(BaseClassifier):
                 epochs=5)
 
     def test_model(self, collection: Collection) -> Collection:
-        features, path_features = self.get_features(collection)
+        features, path_features, my_embedding = self.get_features(collection)
         X = self.preprocess_features(features, train=False)
         X_dep_feat = self.preprocess_path_feat(path_features)
-        x_shapes, x_dep_shapes, indices = predict_by_shape(X, X_dep_feat)
+        x_shapes, x_dep_shapes, my_embedding_shapes, indices = predict_by_shape(X, X_dep_feat, my_embedding)
         pred = []
-        for x_items, x_dep_items in zip(x_shapes, x_dep_shapes):
+        for x_items, x_dep_items, z_items in zip(x_shapes, x_dep_shapes, my_embedding_shapes):
             pred.extend(self.model.predict(
-                (np.asarray(x_items), np.asarray(x_dep_items))))
+                (np.asarray(x_items), np.asarray(x_dep_items), np.asarray(z_items))))
         labels = self.convert_to_label(pred)
         postprocessing_labels(labels, indices, collection)
         return collection
