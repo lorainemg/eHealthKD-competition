@@ -44,36 +44,43 @@ class BaseClassifier:
         self.n_features = None
 
 
-    def preprocess_features(self, features, train=True):
+    def preprocess_features(self, X, train=True, vectorizer=None):
         """
         The features are converted to vectors and their shape is adjusted
         """
-        # X = self._padding_dicts(features, null_value)
-        X = features
+        if vectorizer is None:
+            vectorizer = self.vectorizer
         if train:
             # first the vectorizer must fit the examples
-            self.vectorizer.fit(list(itertools.chain(*X)))
+            vectorizer.fit(list(itertools.chain(*X)))
         # after all the examples are transformed
-        X = [self.vectorizer.transform(sent).todense() for sent in X]
+        X = [vectorizer.transform(sent).todense() for sent in X]
         self.n_features = X[0].shape[-1]
         #         X = X.reshape(1921, 15, X.shape[1])
         return X
 
-    def preprocess_labels(self, labels, encoder=None):
+    def preprocess_labels(self, labels, encoder=None, categorical=True):
         """
         The labels are converted in vectors and their shape is adjusted.
         """
         if encoder is None:
             encoder = self.encoder
         # As with DictVectorizer, all the labels are fit a\nd transformed
-        encoder.fit(list(itertools.chain(*labels)))
-        y = [encoder.transform(label) for label in labels]
+        self.fit_encoder(labels, encoder)
+        y = self.transform_encoder(labels, encoder)
         # the padding is done y = pad_sequences(maxlen=self.max_len, sequences=y, padding="post",
         # value=self.encoder.transform([null_value])[0]) y = y.reshape(1921, 15, y.shape[1]) the labels are one-hot
         # encoded, i.e, the number are represented in arrays.
-        y = [to_categorical(elem, num_classes=len(encoder.classes_)) for elem in y]
+        if categorical:
+            y = [to_categorical(elem, num_classes=len(encoder.classes_)) for elem in y]
         self.n_labels = y[0].shape[-1]
         return y
+
+    def fit_encoder(self, labels, encoder):
+        encoder.fit(list(itertools.chain(*labels)))
+
+    def transform_encoder(self, labels, encoder):
+        return [encoder.transform(label) for label in labels]
 
     def get_weights(self, labels):
         unique_classes = np.array(self.encoder.classes_)
@@ -81,20 +88,21 @@ class BaseClassifier:
         self.weights = compute_class_weight('balanced', classes=unique_classes, y=labels)
         # self.weights = {i: v for i, v in enumerate(weights)}
 
-    # def _padding_dicts(self, X):
-    #     '''
-    #     Auxiliar function because the keras.pad_sequences does not accept dictionaries.
-    #     '''
-    #     new_X = []
-    #     for seq in X:
-    #         new_seq = []
-    #         for i in range(self.max_len):
-    #             try:
-    #                 new_seq.append(seq[i])
-    #             except:
-    #                 new_seq.append(null_value)
-    #         new_X.append(new_seq)
-    #     return new_X
+    def _padding_dicts(self, X, max_len, null_value):
+        '''
+        Auxiliar function because the keras.pad_sequences does not accept dictionaries.
+        '''
+        new_X = []
+        for seq in X:
+            new_seq = []
+            for i in range(self.max_len):
+                try:
+                    new_seq.append(seq[i])
+                except:
+                    new_seq.append(null_value)
+            new_X.append(new_seq)
+        return new_X
+
     def fit_model(self, X, y, plot=False):
         raise NotImplementedError()
 

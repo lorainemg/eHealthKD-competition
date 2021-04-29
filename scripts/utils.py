@@ -126,14 +126,20 @@ def get_dependency_path(graph: nx.DiGraph, token1: int, token2: int, sent):
     Gets the shortest path between the two tokens in the dependency tree.
     Returns the path and its length, otherwise returns null
     """
+    path = []
     try:
         path_list = nx.dijkstra_path(graph, token1, token2)
-        dep_path = ""
+        prev_node = token1
         for node in path_list:
-            dep_path += sent[node].dep_ + '/'
-        return dep_path, len(path_list)
+            # try:
+            #     dir = graph[prev_node][node]['attr_dict']['dir']
+            # except:
+            #     dir = 'null'
+            path.append(sent[node].dep_)
+            prev_node = node
+        return path, len(path_list)
     except:
-        return 'null', 'null'
+        return path, 'null'
 
 
 class MyBatchGenerator(Sequence):
