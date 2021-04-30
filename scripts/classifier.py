@@ -5,6 +5,7 @@ from anntools import Collection
 from ner_clsf import NERClassifier
 from re_clsf import REClassifier
 
+import score
 
 class Classifier:
     """
@@ -49,6 +50,7 @@ class Classifier:
             print(f"Writing output to {submit / folder}")
             output_data.dump(submit / folder / "output.txt", skip_empty_sentences=False)
 
+
     def run(self, collection, taskA, taskB):
         """Its supposed to run the test example"""
         # gold_keyphrases, gold_relations = self.model
@@ -76,14 +78,46 @@ def main():
     # clsf.eval(args.eval, args.scenarios, args.submit)
 
     ref_ = Path('2021/ref/training')
-    eval_ = Path('2021/eval/develop')
-    scenarios = [1, 2, 3]
-    submit_ = Path('2021/submissions/classifier/develop/run1')
-
     clsf = Classifier()
     clsf.fit(ref_)
-    clsf.eval(eval_, scenarios, submit_)
 
+    for i in range(3):
+        eval_ = Path('2021/eval/testing')
+        print(f'Evaluating testing run {i}')
+        scenarios = [1, 2, 3]
+        submit_ = Path(f'2021/submissions/classifier/testing/run{i}')
+
+        clsf.eval(eval_, scenarios, submit_)
+
+    score.main(Path('../2021/eval/testing'),
+        Path('../2021/submissions/classifier/testing'),
+            runs=[1,2,3], scenarios=[1,2,3], verbose=True, prefix="")
+
+
+    for i in range(3):
+        eval_ = Path('2021/eval/training')
+        print(f'Evaluating training run {i}')
+        scenarios = [1, 2, 3]
+        submit_ = Path(f'2021/submissions/classifier/training/run{i}')
+
+        clsf.eval(eval_, scenarios, submit_)
+
+    score.main(Path('../2021/eval/training'),
+        Path('../2021/submissions/classifier/training'),
+            runs=[1,2,3], scenarios=[1,2,3], verbose=True, prefix="")
+
+    for i in range(3):
+        eval_ = Path('2021/eval/develop')
+        print(f'Evaluating develop run {i}')
+        scenarios = [1, 2, 3]
+        submit_ = Path(f'2021/submissions/classifier/develop/run{i}')
+
+        clsf.eval(eval_, scenarios, submit_)
+
+
+    score.main(Path('../2021/eval/develop'),
+        Path('../2021/submissions/classifier/develop'),
+            runs=[1,2,3], scenarios=[1,2,3], verbose=True, prefix="")
 
 if __name__ == "__main__":
     main()

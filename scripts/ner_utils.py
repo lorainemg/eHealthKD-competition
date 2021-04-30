@@ -43,7 +43,7 @@ def get_features(tokens, char2idx):
         features.append({
             'dep': token.dep_,
             'pos': token.pos_,
-            # 'lemma': token.lemma_
+            'lemma': token.lemma_
         })
         for i in range(10):
             try:
@@ -78,20 +78,29 @@ def get_labels(tokens, sentence: Sentence):
     return tags.values(), entities.values()
 
 
-def load_training_entities(sentence: Sentence, char2idx):
+def get_vec(tokens, model, lang):
+    if lang == 'es':
+        return [np.asarray(model.get_word_vector(t.text)) for t in tokens]
+    else:
+        return [np.zeros(300) for _ in tokens]
+
+
+def load_training_entities(sentence: Sentence, char2idx, model):
     lang = detect_language(sentence.text)
     nlp = nlp_es if lang == 'es' else nlp_en
     doc = nlp(sentence.text)
+    embedding = get_vec(doc, model, lang)
     features, X_char = get_features(doc, char2idx)
     tags, entities = get_labels(doc, sentence)
-    return features, X_char, list(tags), list(entities)
+    return features, X_char, embedding, list(tags), list(entities)
 
 
-def load_testing_entities(sentence: Sentence, char2idx):
+def load_testing_entities(sentence: Sentence, char2idx, model):
     lang = detect_language(sentence.text)
     nlp = nlp_es if lang == 'es' else nlp_en
     doc = nlp(sentence.text)
-    return get_features(doc, char2idx)
+    embedding = get_vec(doc, model, lang)
+    return get_features(doc, char2idx), embedding
 
 
 def get_char2idx(collection: Collection):
@@ -226,6 +235,7 @@ def convert_to_str_label(labels_tags, labels_entities):
         labels.append(lab_sent)
     return labels
 
+
 def postprocessing_labels1(labels, indices, sentences, entities):
     next_id = 0
     for sent_labels, index in zip(labels, indices):
@@ -264,7 +274,7 @@ def from_bilouv(bilouv, tokens):
         if label == 'L':
             entities.append(multiple + [word])
             multiple = []
-        if label == 'B':
+        elif label == 'B':
             if multiple:
                 entities.append(multiple)
                 multiple = []

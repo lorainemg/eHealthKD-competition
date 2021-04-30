@@ -9,7 +9,7 @@ import score
 from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Embedding, concatenate, \
-    MaxPooling1D
+    Masking
 from tensorflow.keras.losses import categorical_crossentropy
 from utils import weighted_loss, detect_language, nlp_es, nlp_en
 # from keras_crf import CRF
@@ -28,7 +28,7 @@ class NERClassifier(BaseClassifier):
         self.n_entities = 4
         self.encoder_tags = LabelEncoder()
         self.encoder_entities = LabelEncoder()
-        self.ScieloSku = fasttext.load_model("./Scielo_skipgram_uncased.bin")
+        self.ScieloSku = fasttext.load_model("./Scielo_cbow_cased.bin")
 
     def train(self, collection: Collection):
         """
@@ -47,21 +47,22 @@ class NERClassifier(BaseClassifier):
         # input for words
         inputs = Input(shape=(None, self.n_features))
         #         outputs = Embedding(input_dim=35179, output_dim=20,
-        #                           input_length=self.X_shape[1], mask_zero=True)(inputs)  # 20-dim embedding
+        emb_in = Input(shape=(None, 300))
+                                  # input_length=self.X_shape[1], mask_zero=True)(inputs)  # 20-dim embedding
+        emb_mask = Masking(mask_value=0, input_shape=(None, 10))(emb_in)
         # input for characters
         char_in = Input(shape=(None, 10))
         # inputs of the embeddings
-        emb_in = Input(shape=(None, 300))
         emb_char = TimeDistributed(Embedding(input_dim=254, output_dim=10,
                                              input_length=10, mask_zero=True))(char_in)
         # character LSTM to get word encoding by characters
         char_enc = TimeDistributed(LSTM(units=20, return_sequences=False, recurrent_dropout=0.5))(emb_char)
 
         # main LSTM
-        x = concatenate((inputs, char_enc, emb_in))
-        x = Bidirectional(LSTM(units=32, return_sequences=True,
+        x = concatenate((inputs, char_enc, emb_mask))
+        x = Bidirectional(LSTM(units=64, return_sequences=True,
                                recurrent_dropout=0.1))(x)  # variational biLSTM
-        x = Bidirectional(LSTM(units=32, return_sequences=True,
+        x = Bidirectional(LSTM(units=64, return_sequences=True,
                                recurrent_dropout=0.2, dropout=0.2))(x)
         # x = MaxPooling1D()(x)
         out1 = TimeDistributed(Dense(self.n_tags, activation="softmax"))(x)  # a dense layer as suggested by neuralNer
@@ -91,16 +92,6 @@ class NERClassifier(BaseClassifier):
         # self.get_weights(labels)
         return X, (y_tags, y_entities)
 
-    def get_vec(self, sentence):
-        lang = detect_language(sentence.text)
-        nlp = nlp_es if lang == 'es' else nlp_en
-        tokens = nlp.tokenizer(sentence.text)
-        r = []
-        for t in tokens:
-            x = np.asarray(self.ScieloSku.get_word_vector(t.text))
-            r.append(x)
-        return r
-
     def get_sentences(self, collection: Collection):
         """
         Giving a collection, the features and labels of its sentences are returned
@@ -112,12 +103,12 @@ class NERClassifier(BaseClassifier):
         self.char2idx = get_char2idx(collection)
         embedding_vec = []
         for sentence in collection:
-            feat, chars, tag, entity = load_training_entities(sentence, self.char2idx)
+            feat, chars, embedding, tag, entity = load_training_entities(sentence, self.char2idx, self.ScieloSku)
             features.append(feat)
             tags.append(tag)
             entities.append(entity)
             X_char.append(np.array(chars))
-            embedding_vec.append(self.get_vec(sentence))
+            embedding_vec.append(embedding)
         return features, X_char, embedding_vec, tags, entities
 
     def get_features(self, collection: Collection):
@@ -126,10 +117,10 @@ class NERClassifier(BaseClassifier):
         X_char = []
         embedding_vec = []
         for sentence in collection:
-            feat, chars = load_testing_entities(sentence, self.char2idx)
+            (feat, chars), embedding = load_testing_entities(sentence, self.char2idx, self.ScieloSku)
             features.append(feat)
             X_char.append(chars)
-            embedding_vec.append(self.get_vec(sentence))
+            embedding_vec.append(embedding)
         return features, X_char, embedding_vec
 
     def fit_model(self, X, y, plot=False):
@@ -149,6 +140,7 @@ class NERClassifier(BaseClassifier):
         for shape in x_shapes:
             self.model.fit(
                 (np.asarray(x_shapes[shape]), np.asarray(x_char_shapes[shape]), np.asarray(my_Embedding_shapes[shape])),
+                # (np.asarray(x_shapes[shape]), np.asarray(x_char_shapes[shape])),
                 (np.asarray(yt_shapes[shape]), np.asarray(ye_shapes[shape])),
                 epochs=5)
 
@@ -161,6 +153,7 @@ class NERClassifier(BaseClassifier):
         pred_entities = []
         for x_items, x_chars, z_items in zip(x_shapes, x_char_shapes, my_embedding_shapes):
             pt, pe = self.model.predict((np.asarray(x_items), np.asarray(x_chars), np.asarray(z_items)))
+            # pt, pe = self.model.predict((np.asarray(x_items), np.asarray(x_chars)))
             pred_tags.extend(pt)
             pred_entities.extend(pe)
         labels_tags = self.convert_to_label(pred_tags, self.encoder_tags)
@@ -200,9 +193,9 @@ if __name__ == "__main__":
     collection = Collection().load_dir(Path('2021/ref/training'))
     # dev_set = Collection().load_dir(Path('2021/eval/develop/scenario1-main'))
     ner_clf = NERClassifier()
-    ner_clf.train(collection)
-    ner_clf.save_model('ner')
-    # ner_clf.load_model('ner')
+    # ner_clf.train(collection)
+    # ner_clf.save_model('ner')
+    ner_clf.load_model('ner')
     ner_clf.eval(Path('2021/eval/develop/'), Path('2021/submissions/ner/develop/run1'))
     score.main(Path('2021/eval/develop'),
                Path('2021/submissions/ner/develop'),

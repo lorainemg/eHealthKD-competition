@@ -8,7 +8,7 @@ import os
 import fasttext
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-ScieloSku = fasttext.load_model("./Scielo_skipgram_uncased.bin")
+
 
 def get_keyphrases_pairs(keyphrases):
     """Makes keyphrases pairs to extract the relation"""
@@ -58,15 +58,15 @@ def get_dependency_feat(tokens, keyphrases, k1, k2, digraph, graph):
     return token1, token2, dep_path, dep_len
 
 
-def get_vec(token1,token2):
+def get_vec(token1, token2, model):
         
-    r = list(ScieloSku.get_word_vector(token1.text))
-    r1 = list(ScieloSku.get_word_vector(token2.text))
+    r = list(model.get_word_vector(token1.text))
+    r1 = list(model.get_word_vector(token2.text))
     
     return r + r1
 
 
-def load_training_relations(sentence: Sentence, negative_sampling=1.0):
+def load_training_relations(sentence: Sentence, model, negative_sampling=1.0):
     lang = detect_language(sentence.text)
     nlp = nlp_es if lang == 'es' else nlp_en
     tokens = nlp(sentence.text)
@@ -89,7 +89,7 @@ def load_training_relations(sentence: Sentence, negative_sampling=1.0):
         features.append(get_features(origin, destiny, token1, token2, dep_len))
         feat_path.append(path)
         labels.append(relation.label)
-        my_embedding.append(get_vec(token1,token2))
+        my_embedding.append(get_vec(token1, token2, model))
 
     for k1 in sentence.keyphrases:
         for k2 in sentence.keyphrases:
@@ -99,12 +99,12 @@ def load_training_relations(sentence: Sentence, negative_sampling=1.0):
                 features.append(get_features(k1, k2, t1, t2, path_len))
                 feat_path.append(path)
                 labels.append("empty")
-                my_embedding.append(get_vec(t1,t2))
+                my_embedding.append(get_vec(t1, t2, model))
 
     return features, feat_path, labels , my_embedding
 
 
-def load_testing_relations(sentence: Sentence):
+def load_testing_relations(sentence: Sentence, model):
     lang = detect_language(sentence.text)
     nlp = nlp_es if lang == 'es' else nlp_en
     tokens = nlp(sentence.text)
@@ -121,8 +121,8 @@ def load_testing_relations(sentence: Sentence):
         path, path_len = get_dependency_path(graph, t1.i, t2.i, tokens)
         features.append(get_features(k1, k2, t1, t2, path_len))
         feat_path.append(path)
-        my_embedding.append(get_vec(t1,t2))
-    return features, feat_path,my_embedding
+        my_embedding.append(get_vec(t1, t2, model))
+    return features, feat_path, my_embedding
 
 
 def train_by_shape(X, X_dep_feat, y, my_embedding):

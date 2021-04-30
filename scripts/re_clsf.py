@@ -4,16 +4,16 @@ from pathlib import Path
 # from typing import List
 
 from base_clsf import BaseClassifier
-from re_utils import load_training_relations, load_testing_relations, postprocessing_labels, predict_by_shape, train_by_shape
+from re_utils import load_training_relations, load_testing_relations, postprocessing_labels, predict_by_shape, \
+    train_by_shape
 import score
-
 
 from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.layers import Dense, LSTM, TimeDistributed, Bidirectional, Input, Masking, concatenate
 from tensorflow.keras.losses import categorical_crossentropy
-from utils import weighted_loss, detect_language, nlp_es, nlp_en
+from utils import weighted_loss
 import numpy as np
 import fasttext
 from tensorflow_addons.metrics import FBetaScore
@@ -21,10 +21,11 @@ from tensorflow_addons.metrics import FBetaScore
 
 class REClassifier(BaseClassifier):
     """Classifier for the relation extraction task"""
+
     def __init__(self):
         BaseClassifier.__init__(self)
         self.path_encoder = LabelEncoder()
-        #self.ScieloSku = fasttext.load_model("./Scielo_skipgram_uncased.bin")
+        self.ScieloSku = fasttext.load_model("./Scielo_skipgram_uncased.bin")
 
     def train(self, collection: Collection):
         """
@@ -47,20 +48,20 @@ class REClassifier(BaseClassifier):
         #                           input_length=self.X_shape[1], mask_zero=True)(inputs)  # 20-dim embedding
         x = Masking(mask_value=0, input_shape=(None, 10))(dep_input)
         x = Bidirectional(LSTM(units=32, return_sequences=True,
-                                     recurrent_dropout=0.1))(x)
+                               recurrent_dropout=0.1))(x)
 
         x = concatenate([inputs, x, emb_in])
         x = Bidirectional(LSTM(units=32, return_sequences=True,
-                                     recurrent_dropout=0.1))(x)  # variational biLSTM
-        # outputs = Bidirectional(LSTM(units=512, return_sequences=True,
-        #                    recurrent_dropout=0.2, dropout=0.2))(outputs)
+                               recurrent_dropout=0.1))(x)  # variational biLSTM
+        x = Bidirectional(LSTM(units=32, return_sequences=True,
+                                recurrent_dropout=0.2, dropout=0.2))(x)
         outputs = TimeDistributed(Dense(self.n_labels, activation="softmax"))(
             x)  # a dense layer as suggested by neuralNer
         #         crf = CRF(8)  # CRF layer
         #         out = crf(outputs)  # output
         model = Model(inputs=(inputs, dep_input, emb_in), outputs=outputs)
         model.compile(optimizer="adam", metrics=self.metrics,
-                    #   loss=weighted_loss(categorical_crossentropy, self.weights))
+                      #   loss=weighted_loss(categorical_crossentropy, self.weights))
                       loss=categorical_crossentropy)
         #         model.compile(optimizer="rmsprop", loss=crf.loss_function, metrics=[crf.accuracy])
         model.summary()
@@ -80,8 +81,6 @@ class REClassifier(BaseClassifier):
         # self.y_shape = y.shape
         return X, X_dep, y
 
-    
-
     def preprocess_path_feat(self, path_features):
         X_dep = []
         flat_path_feat = [['None']]
@@ -90,7 +89,8 @@ class REClassifier(BaseClassifier):
         self.fit_encoder(flat_path_feat, self.path_encoder)
         for path_feat in path_features:
             vector = self.transform_encoder(path_feat, self.path_encoder)
-            vector = pad_sequences(maxlen=10, sequences=vector, padding="post", value=self.path_encoder.transform(['None'])[0])
+            vector = pad_sequences(maxlen=10, sequences=vector, padding="post",
+                                   value=self.path_encoder.transform(['None'])[0])
             X_dep.append(vector)
         return X_dep
 
@@ -103,12 +103,12 @@ class REClassifier(BaseClassifier):
         path_features = []
         my_embedding_list = []
         for sentence in collection:
-            feat, path_feat, label , my_embedding = load_training_relations(sentence, 0.5)
-            features.append(feat)
-            labels.append(label)
-            path_features.append(path_feat)
-            my_embedding_list.append(my_embedding)
-            
+            feat, path_feat, label, my_embedding = load_training_relations(sentence, self.ScieloSku, 0.5)
+            if feat:
+                features.append(feat)
+                labels.append(label)
+                path_features.append(path_feat)
+                my_embedding_list.append(my_embedding)
         return features, path_features, my_embedding_list, labels
 
     def get_features(self, collection: Collection):
@@ -117,10 +117,11 @@ class REClassifier(BaseClassifier):
         path_features = []
         my_embedding_list = []
         for sentence in collection:
-            feat, path_feat ,my_embedding= load_testing_relations(sentence)
-            features.append(feat)
-            path_features.append(path_feat)
-            my_embedding_list.append(my_embedding)
+            feat, path_feat, my_embedding = load_testing_relations(sentence, self.ScieloSku)
+            if feat:
+                features.append(feat)
+                path_features.append(path_feat)
+                my_embedding_list.append(my_embedding)
         return features, path_features, my_embedding_list
 
     def fit_model(self, X, y, plot=False):
@@ -169,7 +170,6 @@ class REClassifier(BaseClassifier):
 
 if __name__ == "__main__":
     collection = Collection().load_dir(Path('../2021/ref/training'))
-    dev_set = Collection().load(Path('../2021/eval/develop/scenario1-main/output.txt'))
     re_clf = REClassifier()
     re_clf.train(collection)
     re_clf.save_model('re')
