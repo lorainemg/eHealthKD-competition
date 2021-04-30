@@ -5,8 +5,10 @@ from utils import get_dependency_path
 from itertools import chain
 import random
 import os
-
+import fasttext
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+ScieloSku = fasttext.load_model("./Scielo_skipgram_uncased.bin")
 
 def get_keyphrases_pairs(keyphrases):
     """Makes keyphrases pairs to extract the relation"""
@@ -56,6 +58,14 @@ def get_dependency_feat(tokens, keyphrases, k1, k2, digraph, graph):
     return token1, token2, dep_path, dep_len
 
 
+def get_vec(token1,token2):
+        
+    r = list(ScieloSku.get_word_vector(token1.text))
+    r1 = list(ScieloSku.get_word_vector(token2.text))
+    
+    return r + r1
+
+
 def load_training_relations(sentence: Sentence, negative_sampling=1.0):
     lang = detect_language(sentence.text)
     nlp = nlp_es if lang == 'es' else nlp_en
@@ -64,6 +74,7 @@ def load_training_relations(sentence: Sentence, negative_sampling=1.0):
     features = []
     labels = []
     feat_path = []
+    my_embedding = []
 
     keyphrases = find_keyphrase_tokens(sentence, tokens)
     graph = get_dependency_graph(tokens, directed=False)
@@ -78,6 +89,7 @@ def load_training_relations(sentence: Sentence, negative_sampling=1.0):
         features.append(get_features(origin, destiny, token1, token2, dep_len))
         feat_path.append(path)
         labels.append(relation.label)
+        my_embedding.append(get_vec(token1,token2))
 
     for k1 in sentence.keyphrases:
         for k2 in sentence.keyphrases:
@@ -87,7 +99,9 @@ def load_training_relations(sentence: Sentence, negative_sampling=1.0):
                 features.append(get_features(k1, k2, t1, t2, path_len))
                 feat_path.append(path)
                 labels.append("empty")
-    return features, feat_path, labels
+                my_embedding.append(get_vec(t1,t2))
+
+    return features, feat_path, labels , my_embedding
 
 
 def load_testing_relations(sentence: Sentence):
@@ -101,12 +115,14 @@ def load_testing_relations(sentence: Sentence):
 
     features = []
     feat_path = []
+    my_embedding = []
     for k1, k2 in get_keyphrases_pairs(sentence.keyphrases):
         t1, t2, dep_path, dep_len = get_dependency_feat(tokens, keyphrases, k1, k2, digraph, graph)
         path, path_len = get_dependency_path(graph, t1.i, t2.i, tokens)
         features.append(get_features(k1, k2, t1, t2, path_len))
         feat_path.append(path)
-    return features, feat_path
+        my_embedding.append(get_vec(t1,t2))
+    return features, feat_path,my_embedding
 
 
 def train_by_shape(X, X_dep_feat, y, my_embedding):
@@ -131,7 +147,7 @@ def train_by_shape(X, X_dep_feat, y, my_embedding):
             y_shapes[itemX.shape[0]] = [itemY]
             x_dep_shapes[itemX.shape[0]] = [itemXDep]
             my_embedding_shapes[itemX.shape[0]]= [itemZ]
-    return x_shapes, x_dep_shapes, y_shapes
+    return x_shapes, x_dep_shapes,my_embedding_shapes, y_shapes
 
 
 def predict_by_shape(X, X_dep_feat, my_embedding):
@@ -155,7 +171,7 @@ def predict_by_shape(X, X_dep_feat, my_embedding):
             indices[len(itemX)] = [i]
             x_dep_shapes[itemX.shape[0]] = [itemXDep]
             my_embedding_shapes[len(itemX)] =[itemZ]
-    return x_shapes.values(), x_dep_shapes.values(), my_embedding_shapes, chain(*indices.values())
+    return x_shapes.values(), x_dep_shapes.values(), my_embedding_shapes.values(), chain(*indices.values())
 
 
 ################################ Postprocessing ################################
