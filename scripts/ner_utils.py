@@ -43,7 +43,7 @@ def get_features(tokens, char2idx):
         features.append({
             'dep': token.dep_,
             'pos': token.pos_,
-            'lemma': token.lemma_
+            # 'lemma': token.lemma_
         })
         for i in range(10):
             try:

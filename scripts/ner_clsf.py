@@ -49,7 +49,7 @@ class NERClassifier(BaseClassifier):
         #         outputs = Embedding(input_dim=35179, output_dim=20,
         #                           input_length=self.X_shape[1], mask_zero=True)(inputs)  # 20-dim embedding
         # input for characters
-        char_in = Input(shape=(None, 10,))
+        char_in = Input(shape=(None, 10))
         # inputs of the embeddings
         emb_in = Input(shape=(None, 300))
         emb_char = TimeDistributed(Embedding(input_dim=254, output_dim=10,
@@ -61,8 +61,8 @@ class NERClassifier(BaseClassifier):
         x = concatenate((inputs, char_enc, emb_in))
         x = Bidirectional(LSTM(units=32, return_sequences=True,
                                recurrent_dropout=0.1))(x)  # variational biLSTM
-        # x = Bidirectional(LSTM(units=32, return_sequences=True,
-        #                        recurrent_dropout=0.2, dropout=0.2))(x)
+        x = Bidirectional(LSTM(units=32, return_sequences=True,
+                               recurrent_dropout=0.2, dropout=0.2))(x)
         # x = MaxPooling1D()(x)
         out1 = TimeDistributed(Dense(self.n_tags, activation="softmax"))(x)  # a dense layer as suggested by neuralNer
         out2 = TimeDistributed(Dense(self.n_entities, activation="softmax"))(
