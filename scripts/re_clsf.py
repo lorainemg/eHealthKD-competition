@@ -24,7 +24,7 @@ class REClassifier(BaseClassifier):
     def __init__(self):
         BaseClassifier.__init__(self)
         self.path_encoder = LabelEncoder()
-        self.ScieloSku = fasttext.load_model("./Scielo_skipgram_uncased.bin")
+        #self.ScieloSku = fasttext.load_model("./Scielo_skipgram_uncased.bin")
 
     def train(self, collection: Collection):
         """
@@ -41,7 +41,7 @@ class REClassifier(BaseClassifier):
         `mode` is the mode where the lstm are joined in the bidirectional layer, (its not currently being used)
         """
         inputs = Input(shape=(None, self.n_features))
-        emb_in = Input(shape=(None, 300))
+        emb_in = Input(shape=(None, 600))
         dep_input = Input(shape=(None, 10))
         #         outputs = Embedding(input_dim=35179, output_dim=20,
         #                           input_length=self.X_shape[1], mask_zero=True)(inputs)  # 20-dim embedding
@@ -80,19 +80,7 @@ class REClassifier(BaseClassifier):
         # self.y_shape = y.shape
         return X, X_dep, y
 
-    def get_vec(self,sentence):
-        lang = detect_language(sentence.text)
-        if lang == 'es' :
-            nlp = nlp_es
-        else:
-            nlp = nlp_en
-
-        tokens = nlp.tokenizer(sentence)
-        r = []
-        for t in tokens:
-            r.append(self.ScieloSku.get_word_vector(t.text))
-
-        return r
+    
 
     def preprocess_path_feat(self, path_features):
         X_dep = []
@@ -113,26 +101,27 @@ class REClassifier(BaseClassifier):
         features = []
         labels = []
         path_features = []
-        my_embedding = []
+        my_embedding_list = []
         for sentence in collection:
-            feat, path_feat, label = load_training_relations(sentence, 0.5)
+            feat, path_feat, label , my_embedding = load_training_relations(sentence, 0.5)
             features.append(feat)
             labels.append(label)
             path_features.append(path_feat)
-            my_embedding.append(self.get_vec(sentence))
-        return features, path_features, my_embedding, labels
+            my_embedding_list.append(my_embedding)
+            
+        return features, path_features, my_embedding_list, labels
 
     def get_features(self, collection: Collection):
         """Giving a collection, the features of its sentences are returned"""
         features = []
         path_features = []
-        my_embedding = []
+        my_embedding_list = []
         for sentence in collection:
-            feat, path_feat = load_testing_relations(sentence)
+            feat, path_feat ,my_embedding= load_testing_relations(sentence)
             features.append(feat)
             path_features.append(path_feat)
-            my_embedding.append(self.get_vec(sentence))
-        return features, path_features, my_embedding
+            my_embedding_list.append(my_embedding)
+        return features, path_features, my_embedding_list
 
     def fit_model(self, X, y, plot=False):
         """
@@ -148,7 +137,7 @@ class REClassifier(BaseClassifier):
         x_shapes, x_dep_shapes, my_embedding_shapes, y_shapes = train_by_shape(X, X_feat, y, my_embedding)
         for shape in x_shapes:
             self.model.fit(
-                (np.asarray(x_shapes[shape]), np.asarray(x_dep_shapes[shape])),
+                (np.asarray(x_shapes[shape]), np.asarray(x_dep_shapes[shape]), np.asarray(my_embedding_shapes[shape])),
                 np.asarray(y_shapes[shape]),
                 epochs=5)
 
@@ -179,13 +168,13 @@ class REClassifier(BaseClassifier):
 
 
 if __name__ == "__main__":
-    collection = Collection().load_dir(Path('2021/ref/training'))
-    dev_set = Collection().load(Path('2021/eval/develop/scenario1-main/output.txt'))
+    collection = Collection().load_dir(Path('../2021/ref/training'))
+    dev_set = Collection().load(Path('../2021/eval/develop/scenario1-main/output.txt'))
     re_clf = REClassifier()
     re_clf.train(collection)
     re_clf.save_model('re')
     # # re_clf.load_model('re')
-    re_clf.eval(Path('2021/eval/develop/'), Path('2021/submissions/ner/develop/run1'))
-    score.main(Path('2021/eval/develop'),
-               Path('2021/submissions/ner/develop'),
+    re_clf.eval(Path('../2021/eval/develop/'), Path('../2021/submissions/ner/develop/run1'))
+    score.main(Path('../2021/eval/develop'),
+               Path('../2021/submissions/ner/develop'),
                runs=[1], scenarios=[3], verbose=True, prefix="")
