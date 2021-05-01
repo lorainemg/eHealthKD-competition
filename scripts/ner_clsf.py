@@ -28,16 +28,16 @@ class NERClassifier(BaseClassifier):
         self.n_entities = 4
         self.encoder_tags = LabelEncoder()
         self.encoder_entities = LabelEncoder()
-        self.ScieloSku = fasttext.load_model("./Scielo_cbow_cased.bin")
+        # self.ScieloSku = fasttext.load_model("./Scielo_cbow_cased.bin")
 
     def train(self, collection: Collection):
         """
         Wrapper function where of the process of training is done
         """
-        features, X_char, my_embedding, tags, entities = self.get_sentences(collection)
+        features, X_char, tags, entities = self.get_sentences(collection)
         X, (y_tags, y_entities) = self.preprocessing(features, (tags, entities))
         self.get_model()
-        return self.fit_model((X, X_char, my_embedding), (y_tags, y_entities))
+        return self.fit_model((X, X_char), (y_tags, y_entities))
 
     def get_model(self):
         """
@@ -47,9 +47,9 @@ class NERClassifier(BaseClassifier):
         # input for words
         inputs = Input(shape=(None, self.n_features))
         #         outputs = Embedding(input_dim=35179, output_dim=20,
-        emb_in = Input(shape=(None, 300))
-                                  # input_length=self.X_shape[1], mask_zero=True)(inputs)  # 20-dim embedding
-        emb_mask = Masking(mask_value=0, input_shape=(None, 10))(emb_in)
+        # emb_in = Input(shape=(None, 300))
+        #                           # input_length=self.X_shape[1], mask_zero=True)(inputs)  # 20-dim embedding
+        # emb_mask = Masking(mask_value=0, input_shape=(None, 10))(emb_in)
         # input for characters
         char_in = Input(shape=(None, 10))
         # inputs of the embeddings
@@ -59,10 +59,10 @@ class NERClassifier(BaseClassifier):
         char_enc = TimeDistributed(LSTM(units=20, return_sequences=False, recurrent_dropout=0.5))(emb_char)
 
         # main LSTM
-        x = concatenate((inputs, char_enc, emb_mask))
-        x = Bidirectional(LSTM(units=64, return_sequences=True,
+        x = concatenate((inputs, char_enc))
+        x = Bidirectional(LSTM(units=32, return_sequences=True,
                                recurrent_dropout=0.1))(x)  # variational biLSTM
-        x = Bidirectional(LSTM(units=64, return_sequences=True,
+        x = Bidirectional(LSTM(units=32, return_sequences=True,
                                recurrent_dropout=0.2, dropout=0.2))(x)
         # x = MaxPooling1D()(x)
         out1 = TimeDistributed(Dense(self.n_tags, activation="softmax"))(x)  # a dense layer as suggested by neuralNer
@@ -71,7 +71,7 @@ class NERClassifier(BaseClassifier):
         # crf = CRF(self.n_labels)  # CRF layer
         # outputs = crf(outputs)  # output
 
-        model = Model(inputs=(inputs, char_in, emb_in), outputs=(out1, out2))
+        model = Model(inputs=(inputs, char_in), outputs=(out1, out2))
         model.compile(optimizer="adam", metrics=self.metrics,
                       # loss=weighted_loss(categorical_crossentropy, self.weights))
                       loss=categorical_crossentropy)
@@ -101,27 +101,27 @@ class NERClassifier(BaseClassifier):
         entities = []
         X_char = []
         self.char2idx = get_char2idx(collection)
-        embedding_vec = []
+        # embedding_vec = []
         for sentence in collection:
-            feat, chars, embedding, tag, entity = load_training_entities(sentence, self.char2idx, self.ScieloSku)
+            feat, chars, tag, entity = load_training_entities(sentence, self.char2idx)
             features.append(feat)
             tags.append(tag)
             entities.append(entity)
             X_char.append(np.array(chars))
-            embedding_vec.append(embedding)
-        return features, X_char, embedding_vec, tags, entities
+            # embedding_vec.append(embedding)
+        return features, X_char, tags, entities
 
     def get_features(self, collection: Collection):
         """Giving a collection, the features of its sentences are returned"""
         features = []
         X_char = []
-        embedding_vec = []
+        # embedding_vec = []
         for sentence in collection:
-            (feat, chars), embedding = load_testing_entities(sentence, self.char2idx, self.ScieloSku)
+            feat, chars = load_testing_entities(sentence, self.char2idx)
             features.append(feat)
             X_char.append(chars)
-            embedding_vec.append(embedding)
-        return features, X_char, embedding_vec
+            # embedding_vec.append(embedding)
+        return features, X_char
 
     def fit_model(self, X, y, plot=False):
         """
@@ -130,30 +130,30 @@ class NERClassifier(BaseClassifier):
         # hist = self.model.fit(X, y, batch_size=32, epochs=5,
         #             validation_split=0.2, verbose=1)
         # hist = self.model.fit(MyBatchGenerator(X, y, batch_size=30), epochs=5)
-        X, X_char, my_Embedding = X
+        X, X_char = X
         y_tags, y_entities = y
         num_examples = len(X)
 
         # self.model.fit(self.generator(X, y), steps_per_epoch=steps_per_epoch, epochs=5)
-        x_shapes, x_char_shapes, my_Embedding_shapes, yt_shapes, ye_shapes = train_by_shape(X, y_tags, y_entities,
-                                                                                            X_char, my_Embedding)
+        x_shapes, x_char_shapes, yt_shapes, ye_shapes = train_by_shape(X, y_tags, y_entities,
+                                                                                            X_char)
         for shape in x_shapes:
             self.model.fit(
-                (np.asarray(x_shapes[shape]), np.asarray(x_char_shapes[shape]), np.asarray(my_Embedding_shapes[shape])),
-                # (np.asarray(x_shapes[shape]), np.asarray(x_char_shapes[shape])),
+                # (np.asarray(x_shapes[shape]), np.asarray(x_char_shapes[shape]), np.asarray(my_Embedding_shapes[shape])),
+                (np.asarray(x_shapes[shape]), np.asarray(x_char_shapes[shape])),
                 (np.asarray(yt_shapes[shape]), np.asarray(ye_shapes[shape])),
                 epochs=5)
 
     def test_model(self, collection: Collection) -> Collection:
         collection = collection.clone()
-        features, X_char, my_embedding = self.get_features(collection)
+        features, X_char = self.get_features(collection)
         X = self.preprocess_features(features, train=False)
-        x_shapes, x_char_shapes, my_embedding_shapes, indices = predict_by_shape(X, X_char, my_embedding)
+        x_shapes, x_char_shapes, indices = predict_by_shape(X, X_char)
         pred_tags = []
         pred_entities = []
-        for x_items, x_chars, z_items in zip(x_shapes, x_char_shapes, my_embedding_shapes):
-            pt, pe = self.model.predict((np.asarray(x_items), np.asarray(x_chars), np.asarray(z_items)))
-            # pt, pe = self.model.predict((np.asarray(x_items), np.asarray(x_chars)))
+        for x_items, x_chars in zip(x_shapes, x_char_shapes):
+            # pt, pe = self.model.predict((np.asarray(x_items), np.asarray(x_chars), np.asarray(z_items)))
+            pt, pe = self.model.predict((np.asarray(x_items), np.asarray(x_chars)))
             pred_tags.extend(pt)
             pred_entities.extend(pe)
         labels_tags = self.convert_to_label(pred_tags, self.encoder_tags)
@@ -193,9 +193,9 @@ if __name__ == "__main__":
     collection = Collection().load_dir(Path('2021/ref/training'))
     # dev_set = Collection().load_dir(Path('2021/eval/develop/scenario1-main'))
     ner_clf = NERClassifier()
-    # ner_clf.train(collection)
-    # ner_clf.save_model('ner')
-    ner_clf.load_model('ner')
+    ner_clf.train(collection)
+    ner_clf.save_model('ner')
+    # ner_clf.load_model('ner')
     ner_clf.eval(Path('2021/eval/develop/'), Path('2021/submissions/ner/develop/run1'))
     score.main(Path('2021/eval/develop'),
                Path('2021/submissions/ner/develop'),

@@ -28,13 +28,19 @@ class Classifier:
         collection = Collection().load_dir(path)
 
         print(f"Loaded {len(collection)} sentences for fitting.")
-        print('Starting ner classifier training')
-        self.ner_classifier.train(collection)
-        print('Starting re classifier training')
-        self.re_classifier.train(collection)
+        try:
+            print('Loading ner classifer')
+            self.ner_classifier.load_model('ner')
+            print('Loading re classifier')
+            self.re_classifier.load_model('re')
+        except:
+            print('Starting ner classifier training')
+            self.ner_classifier.train(collection)
+            print('Starting re classifier training')
+            self.re_classifier.train(collection)
         # print(f"Training completed: Stored {len(keyphrases)} keyphrases and {len(relations)} relation pairs.")
 
-    def eval(self, path: Path, scenarios: List[int], submit: Path):
+    def eval(self, path: Path, scenarios: List[int], submit: Path, run):
         """Function that evals according to the baseline classifier"""
         # Its not changed 
         for id in scenarios:
@@ -47,8 +53,8 @@ class Classifier:
             print(f"Loaded {len(input_data)} input sentences.")
             output_data = self.run(input_data, taskA, taskB)
 
-            print(f"Writing output to {submit / folder}")
-            output_data.dump(submit / folder / "output.txt", skip_empty_sentences=False)
+            print(f"Writing output to {submit / run / folder }")
+            output_data.dump(submit / run / folder  / "output.txt", skip_empty_sentences=False)
 
 
     def run(self, collection, taskA, taskB):
@@ -85,12 +91,12 @@ def main():
         eval_ = Path('2021/eval/testing')
         print(f'Evaluating testing run {i}')
         scenarios = [1, 2, 3]
-        submit_ = Path(f'2021/submissions/classifier/testing/run{i}')
+        submit_ = Path(f'2021/submissions/classifier/testing/')
+ 
+        clsf.eval(eval_, scenarios, submit_, f'run{i}')
 
-        clsf.eval(eval_, scenarios, submit_)
-
-    score.main(Path('../2021/eval/testing'),
-        Path('../2021/submissions/classifier/testing'),
+    score.main(Path('2021/eval/testing'),
+        Path('2021/submissions/classifier/testing'),
             runs=[1,2,3], scenarios=[1,2,3], verbose=True, prefix="")
 
 
@@ -98,25 +104,25 @@ def main():
         eval_ = Path('2021/eval/training')
         print(f'Evaluating training run {i}')
         scenarios = [1, 2, 3]
-        submit_ = Path(f'2021/submissions/classifier/training/run{i}')
+        submit_ = Path(f'2021/submissions/classifier/training/')
 
-        clsf.eval(eval_, scenarios, submit_)
+        clsf.eval(eval_, scenarios, submit_, f'run{i}')
 
-    score.main(Path('../2021/eval/training'),
-        Path('../2021/submissions/classifier/training'),
+    score.main(Path('2021/eval/training'),
+        Path('2021/submissions/classifier/training'),
             runs=[1,2,3], scenarios=[1,2,3], verbose=True, prefix="")
 
     for i in range(3):
         eval_ = Path('2021/eval/develop')
         print(f'Evaluating develop run {i}')
         scenarios = [1, 2, 3]
-        submit_ = Path(f'2021/submissions/classifier/develop/run{i}')
+        submit_ = Path(f'2021/submissions/classifier/develop/')
 
-        clsf.eval(eval_, scenarios, submit_)
+        clsf.eval(eval_, scenarios, submit_, f'run{i}')
 
 
-    score.main(Path('../2021/eval/develop'),
-        Path('../2021/submissions/classifier/develop'),
+    score.main(Path('2021/eval/develop'),
+        Path('2021/submissions/classifier/develop'),
             runs=[1,2,3], scenarios=[1,2,3], verbose=True, prefix="")
 
 if __name__ == "__main__":

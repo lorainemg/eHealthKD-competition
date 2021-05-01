@@ -16,7 +16,6 @@ from tensorflow.keras.losses import categorical_crossentropy
 from utils import weighted_loss
 import numpy as np
 import fasttext
-from tensorflow_addons.metrics import FBetaScore
 
 
 class REClassifier(BaseClassifier):
@@ -53,8 +52,8 @@ class REClassifier(BaseClassifier):
         x = concatenate([inputs, x, emb_in])
         x = Bidirectional(LSTM(units=32, return_sequences=True,
                                recurrent_dropout=0.1))(x)  # variational biLSTM
-        x = Bidirectional(LSTM(units=32, return_sequences=True,
-                                recurrent_dropout=0.2, dropout=0.2))(x)
+        # x = Bidirectional(LSTM(units=32, return_sequences=True,
+        #                         recurrent_dropout=0.2, dropout=0.2))(x)
         outputs = TimeDistributed(Dense(self.n_labels, activation="softmax"))(
             x)  # a dense layer as suggested by neuralNer
         #         crf = CRF(8)  # CRF layer
@@ -171,9 +170,9 @@ class REClassifier(BaseClassifier):
 if __name__ == "__main__":
     collection = Collection().load_dir(Path('../2021/ref/training'))
     re_clf = REClassifier()
-    re_clf.train(collection)
-    re_clf.save_model('re')
-    # # re_clf.load_model('re')
+    # re_clf.train(collection)
+    # re_clf.save_model('re')
+    re_clf.load_model('re')
     re_clf.eval(Path('../2021/eval/develop/'), Path('../2021/submissions/ner/develop/run1'))
     score.main(Path('../2021/eval/develop'),
                Path('../2021/submissions/ner/develop'),
