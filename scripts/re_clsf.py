@@ -16,6 +16,7 @@ from tensorflow.keras.losses import categorical_crossentropy
 from utils import weighted_loss
 import numpy as np
 import fasttext
+import time
 
 
 class REClassifier(BaseClassifier):
@@ -24,7 +25,7 @@ class REClassifier(BaseClassifier):
     def __init__(self):
         BaseClassifier.__init__(self)
         self.path_encoder = LabelEncoder()
-        self.ScieloSku = fasttext.load_model("./Scielo_skipgram_uncased.bin")
+        self.ScieloSku = fasttext.load_model("./Scielo+Wiki_skipgram_uncased.bin")
 
     def train(self, collection: Collection):
         """
@@ -133,13 +134,14 @@ class REClassifier(BaseClassifier):
         X, X_feat, my_embedding = X
         num_examples = len(X)
         steps_per_epoch = num_examples / 5
+    
         # self.model.fit(self.generator(X, y), steps_per_epoch=steps_per_epoch, epochs=5)
         x_shapes, x_dep_shapes, my_embedding_shapes, y_shapes = train_by_shape(X, X_feat, y, my_embedding)
         for shape in x_shapes:
             self.model.fit(
                 (np.asarray(x_shapes[shape]), np.asarray(x_dep_shapes[shape]), np.asarray(my_embedding_shapes[shape])),
                 np.asarray(y_shapes[shape]),
-                epochs=5)
+                epochs=10)
 
     def test_model(self, collection: Collection) -> Collection:
         features, path_features, my_embedding = self.get_features(collection)
@@ -168,12 +170,15 @@ class REClassifier(BaseClassifier):
 
 
 if __name__ == "__main__":
+    start = time.time()
     collection = Collection().load_dir(Path('../2021/ref/training'))
     re_clf = REClassifier()
-    # re_clf.train(collection)
-    # re_clf.save_model('re')
-    re_clf.load_model('re')
+    re_clf.train(collection)
+    re_clf.save_model('re')
+    # re_clf.load_model('re')
     re_clf.eval(Path('../2021/eval/develop/'), Path('../2021/submissions/ner/develop/run1'))
     score.main(Path('../2021/eval/develop'),
                Path('../2021/submissions/ner/develop'),
                runs=[1], scenarios=[3], verbose=True, prefix="")
+    end = time.time() 
+    print(end-start)

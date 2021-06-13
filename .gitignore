@@ -130,4 +130,13 @@ dmypy.json
 
 # notebooks
 .ipynb
-scripts/2021
+
+# my ignores
+scripts/2021/
+scripts/notebooks/
+ia-env/
+*.bin
+*.pkl
+*.h5
+*.json
+.idea/
