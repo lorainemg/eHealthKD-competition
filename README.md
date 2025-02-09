@@ -1,12 +1,29 @@
-# UH-MMM submission for the eHealth-KD Challenge
+# eHealthKD-competition
 
-This is the source code of our team final submission.
+This repository contains the final submission for the eHealth-KD Challenge by the UH-MMM team. The project focuses on Named Entity Recognition (NER) and Relation Extraction (RE) using machine learning models.
 
-`2021` contains the data available for the competition. This includes training, development and test data.
+## Project Structure
 
-`scripts` contains the source code of the different models implemented. In `ner_clsf.py` the NER model is implemented and `re_clsf.py` contains the RE model implementation. `classifier.py` wraps the name entity classifier and the relation extractor classifier, the models are tested in the different scenarios and collections.
+- **2021**: Contains the data available for the competition, including training, development, and test datasets.
+- **scripts**: Contains the source code for the implemented models.
+  - `ner_clsf.py`: NER model implementation.
+  - `re_clsf.py`: RE model implementation.
+  - `classifier.py`: Wraps the NER and RE models for testing in various scenarios.
 
-The FastText Spanish Medical Embeddings are not included for its size. They can be downloaded in https://zenodo.org/record/3744326. For the system to work, the Scielo+Wiki SkipGram Uncased should be unzipped in `scripts` (i.e, the bin file)
+## Setup Instructions
 
-The documentation paper can be found in [paper](https://github.com/lorainemg/eHealthKD-competition/blob/main/docs/ehealth_paper4.pdf).
+To use the system:
+1. Download the FastText Spanish Medical Embeddings from [Zenodo](https://zenodo.org/record/3744326).
+2. Unzip the embeddings file "Scielo+Wiki SkipGram Uncased" into the `scripts` directory.
+
+## License
+
+This project is licensed under the MIT License.
+
+## Citation
+
+If you use this code, please refer to the associated paper for more details.
+
+For further information, refer to the [documentation paper](https://github.com/lorainemg/eHealthKD-competition/blob/main/docs/ehealth_paper4.pdf).
+
 
